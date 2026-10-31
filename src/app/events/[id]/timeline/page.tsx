@@ -18,7 +18,7 @@ interface TaskItem {
   dueDate: string;
   isMilestone: boolean;
   isUserLocked: boolean;
-  dependencies?: { id: string; dependsOnTaskId: string }[];
+  dependencies?: any[];
 }
 
 export default function TimelinePage({

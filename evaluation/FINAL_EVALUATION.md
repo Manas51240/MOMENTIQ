@@ -87,3 +87,4 @@ The CELEBRA platform meets all engineering criteria for the II2S Challenge 5 com
 7. [`evaluation/TEST_REPORT.md`](file:///e:/Celebria_Event_Planner/evaluation/TEST_REPORT.md) — Vitest and Playwright test logs and coverage results.
 8. [`evaluation/ACCESSIBILITY_REPORT.md`](file:///e:/Celebria_Event_Planner/evaluation/ACCESSIBILITY_REPORT.md) — WCAG 2.2 AA audit report and AxeBuilder results.
 9. [`evaluation/KNOWN_LIMITATIONS.md`](file:///e:/Celebria_Event_Planner/evaluation/KNOWN_LIMITATIONS.md) — Documented architectural boundaries and production recommendations.
+

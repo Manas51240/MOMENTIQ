@@ -88,3 +88,4 @@ Automated accessibility test execution log from [`e2e/accessibility.spec.ts`](fi
 ## 4. Accessibility Conclusion
 
 The CELEBRA application fully satisfies the **WCAG 2.2 AA target** with zero accessibility violations detected across all tested routes and components.
+

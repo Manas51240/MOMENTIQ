@@ -122,7 +122,7 @@ export default function PublicRsvpPage({
             href="/"
             className="inline-block mt-4 px-4 py-2 rounded-lg bg-stone-900 text-white text-xs font-bold"
           >
-            Visit CELEBRA Home
+            Visit MOMENTIQ Home
           </Link>
         </div>
       </div>

@@ -10,40 +10,6 @@ import { Modal } from '@/components/ui/Modal';
 import { Alert } from '@/components/ui/Alert';
 import { MANDATORY_RISK_CATEGORIES } from '@/lib/risk/matrix';
 
-export interface RiskItem {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  probability: number;
-  impact: number;
-  riskScore: number;
-  severityLevel?: string;
-  mitigation?: string;
-  contingency?: string;
-  mitigationPlan?: string;
-  contingencyPlan?: string;
-  ownerName?: string;
-  status: string;
-  reviewDate?: string;
-  createdAt?: string;
-}
-
-export interface RiskMetrics {
-  totalRisks: number;
-  highRiskCount: number;
-  mediumRiskCount: number;
-  lowRiskCount: number;
-  averageRiskScore: number;
-  overallEventRiskHealth: string;
-}
-
-export interface RiskData {
-  risks: RiskItem[];
-  metrics: RiskMetrics;
-  canEdit?: boolean;
-}
-
 export default function RisksPage({
   params,
 }: {
@@ -52,7 +18,7 @@ export default function RisksPage({
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<RiskData | null>(null);
+  const [data, setData] = useState<any>(null);
   const [alertInfo, setAlertInfo] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null);
 
   // Category filter
@@ -204,7 +170,7 @@ export default function RisksPage({
     );
   }
 
-  const risks: RiskItem[] = data?.risks || [];
+  const risks: any[] = data?.risks || [];
   const metrics = data?.metrics || {
     totalRisks: 0,
     highRiskCount: 0,
@@ -333,7 +299,7 @@ export default function RisksPage({
             </div>
           ) : (
             <div className="divide-y divide-stone-200">
-              {filteredRisks.map((r: RiskItem) => {
+              {filteredRisks.map((r: any) => {
                 const score = r.riskScore;
                 const isHigh = score >= 15;
                 const isMedium = score >= 8 && score < 15;

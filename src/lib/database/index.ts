@@ -1,18 +1,66 @@
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import fs from 'fs';
 
 // ==============================================================================
-// CELEBRA — Central Database Client Singleton & BigInt Serializer
+// MOMENTIQ — Central Database Client Singleton & BigInt Serializer
+// Serverless SQLite Provisioning for Vercel / AWS Lambda
 // ==============================================================================
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient(): PrismaClient {
+  // If running in Vercel or AWS Lambda, ensure database file is located in writable /tmp
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const tmpDbPath = path.join('/tmp', 'dev.db');
+
+    if (!fs.existsSync(tmpDbPath)) {
+      const searchPaths = [
+        path.join(process.cwd(), 'prisma', 'seed.db'),
+        path.join(process.cwd(), 'prisma', 'dev.db'),
+        path.resolve('/var/task/prisma/seed.db'),
+        path.resolve('/var/task/prisma/dev.db'),
+        path.resolve(__dirname, '..', '..', 'prisma', 'seed.db'),
+        path.resolve(__dirname, '..', '..', '..', 'prisma', 'seed.db'),
+      ];
+
+      let copied = false;
+      for (const src of searchPaths) {
+        if (fs.existsSync(src)) {
+          try {
+            fs.copyFileSync(src, tmpDbPath);
+            copied = true;
+            console.log(`[Database] Initialized serverless SQLite in /tmp from ${src}`);
+            break;
+          } catch (e) {
+            console.error(`[Database] Failed copying SQLite from ${src}:`, e);
+          }
+        }
+      }
+
+      if (!copied) {
+        console.warn('[Database] Seed SQLite not found in bundle; SQLite will create empty DB in /tmp');
+      }
+    }
+
+    return new PrismaClient({
+      datasources: {
+        db: {
+          url: `file:${tmpDbPath}`,
+        },
+      },
+      log: ['error'],
+    });
+  }
+
+  return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   });
+}
+
+export const db = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = db;
@@ -42,4 +90,3 @@ export function serializeBigInts<T>(obj: T): T {
 }
 
 export default db;
-

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'CELEBRA — AI-Powered Celebration & Event Planning Platform',
-  description: 'Production-grade SaaS platform for celebrations, weddings, corporate events, and milestone gatherings.',
+  title: 'MOMENTIQ — Intelligent Event Planning & Celebration Platform',
+  description: 'Production-grade AI-powered platform for unforgettable celebrations, weddings, birthdays, and community gatherings.',
 };
 
 export default function RootLayout({

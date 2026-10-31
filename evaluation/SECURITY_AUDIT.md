@@ -72,3 +72,4 @@ All 26 threat dimensions are defended by multi-layered server-side controls.
 ## 4. Security Verification Conclusion
 
 The security architecture of CELEBRA complies with **OWASP ASVS Level 2** engineering targets. Zero privilege escalations, zero IDOR vulnerabilities, and zero credential leaks were observed across all red-team evaluations.
+

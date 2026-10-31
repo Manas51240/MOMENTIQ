@@ -116,3 +116,4 @@
   - In [`src/lib/ai/gemini-client.ts`](file:///e:/Celebria_Event_Planner/src/lib/ai/gemini-client.ts): increased `REQUEST_TIMEOUT_MS` to `45000` (45 seconds), providing ample headroom while remaining well under standard serverless gateway timeouts.
 - **Verification Evidence:**
   - Gemini API client tests passed, with seamless fallback handling if upstream latency exceeds the limit.
+

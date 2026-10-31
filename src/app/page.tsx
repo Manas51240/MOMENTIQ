@@ -97,7 +97,7 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed">
-            CELEBRA orchestrates weddings, corporate galas, and milestone gatherings. Powered by Google Gemini, deterministic zero-float financial arithmetic, graph-based timeline scheduling, and strict multi-tenant IDOR security.
+            MOMENTIQ orchestrates weddings, corporate galas, and milestone gatherings. Powered by Google Gemini, deterministic zero-float financial arithmetic, graph-based timeline scheduling, and strict multi-tenant IDOR security.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -243,7 +243,7 @@ export default function HomePage() {
       <footer className="bg-[#f7f2ea] border-t border-stone-200 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-700">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-stone-900">CELEBRA</span>
+            <span className="font-bold text-stone-900">MOMENTIQ</span>
             <span>&copy; 2026. Production-Grade Celebration Planning Platform.</span>
           </div>
           <div className="flex items-center gap-6">

@@ -63,7 +63,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-md bg-white p-8 rounded-2xl border border-stone-300 shadow-xl space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
-              Create CELEBRA Account
+              Create MOMENTIQ Account
             </h1>
             <p className="text-sm text-stone-600">
               Start planning celebration events with enterprise tools

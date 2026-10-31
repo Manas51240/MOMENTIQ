@@ -60,6 +60,9 @@ const nextConfig = {
       },
     ];
   },
+  outputFileTracingIncludes: {
+    '/**': ['./prisma/seed.db', './prisma/schema.prisma'],
+  },
 };
 
 export default nextConfig;

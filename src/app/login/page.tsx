@@ -49,11 +49,14 @@ export default function LoginPage() {
         <div className="w-full max-w-md bg-white p-8 rounded-2xl border border-stone-300 shadow-xl space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
-              Sign In to CELEBRA
+              Sign In to MOMENTIQ
             </h1>
             <p className="text-sm text-stone-600">
               Access your celebration workspaces and AI Event Architect
             </p>
+            <div className="mt-2 inline-block px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium">
+              Demo: <span className="font-mono font-bold">demo@momentiq.com</span> | <span className="font-mono font-bold">Password123!</span>
+            </div>
           </div>
 
           {errorMessage && (

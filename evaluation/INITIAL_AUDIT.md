@@ -63,3 +63,4 @@
 4. **P3 (Low):**
    - Refactor `useState<any>` in event detail subpages to typed interfaces.
    - Generate full documentation suite in `evaluation/`.
+

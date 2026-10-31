@@ -1,11 +1,11 @@
 {
-  "name": "celebra",
+  "name": "momentiq",
   "version": "1.0.0",
   "private": true,
-  "description": "CELEBRA - Production-Grade AI-Powered Celebration & Event Planning Platform",
+  "description": "MOMENTIQ - Intelligent Event Planning & Celebration Platform",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && prisma db push --skip-generate && node scripts/seed-demo.js && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",

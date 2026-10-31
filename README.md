@@ -1,14 +1,16 @@
-# CELEBRA — AI-Powered Celebration & Event Planning Platform
-### II2S Challenge 5: Celebration & Event Planner
+# MOMENTIQ — Intelligent Event Planning & Celebration Platform
+### II2S Challenge 5: Event Planning & Celebration System
+**Live Production URL:** Deploying to Vercel  
+**Demo Credentials:** `demo@momentiq.com` / `Password123!`  
 **Defensible Target Score:** 100/100 across Code Quality, Security, Efficiency, Testing, Accessibility, and Problem Alignment.
 
 ---
 
 ## 🌟 Executive Overview
 
-**CELEBRA** is a production-grade, full-stack, enterprise-hardened SaaS platform designed to plan, architect, budget, and manage complex celebrations and events. Supporting 8 primary event domains—**Weddings, Corporate Galas, Birthdays, Anniversaries, Engagements, Baby Showers, Community Festivals, and Cultural Gatherings**—CELEBRA bridges generative AI capabilities with deterministic backend engineering.
+**MOMENTIQ** is a production-grade, full-stack, enterprise-hardened SaaS platform designed to plan, architect, budget, and manage complex celebrations and events. Supporting 8 primary event domains—**Weddings, Corporate Galas, Birthdays, Anniversaries, Engagements, Baby Showers, Community Festivals, and Cultural Gatherings**—MOMENTIQ bridges generative AI capabilities with deterministic backend engineering.
 
-Unlike shallow wrappers or prototype mockups, CELEBRA enforces:
+Unlike shallow wrappers or prototype mockups, MOMENTIQ enforces:
 - **Zero Floating-Point Financial Arithmetic**: 64-bit integer minor currency units (`BigInt`) with basis points taxation and 10,000-iteration zero drift proof.
 - **Intelligent Directed Acyclic Graph (DAG) Scheduler**: Non-blocking DFS cycle detection, near-term schedule compression, and manual task edit locks.
 - **Dual AI Engine**: Seamless orchestration between Google Gemini 2.5 Flash and a 100% deterministic generative fallback engine.

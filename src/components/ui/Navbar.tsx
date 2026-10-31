@@ -42,9 +42,9 @@ export function Navbar() {
               className="flex items-center gap-2.5 text-stone-900 font-extrabold text-xl tracking-tight hover:opacity-90 transition-opacity"
             >
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-white font-black text-lg shadow-sm">
-                C
+                M
               </div>
-              <span>CELEBRA</span>
+              <span>MOMENTIQ</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-stone-600">
