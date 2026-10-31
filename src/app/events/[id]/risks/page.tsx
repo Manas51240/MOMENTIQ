@@ -219,7 +219,7 @@ export default function RisksPage({
             <button
               type="button"
               onClick={() => setIsRiskModalOpen(true)}
-              className="px-4 py-2 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-all shadow-sm"
+              className="px-4 py-2 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl transition-all shadow-sm"
             >
               + Register Risk
             </button>
@@ -547,7 +547,7 @@ export default function RisksPage({
             <button
               type="submit"
               disabled={submittingRisk}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {submittingRisk ? 'Saving...' : 'Register Risk'}
             </button>

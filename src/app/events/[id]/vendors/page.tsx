@@ -294,7 +294,7 @@ export default function VendorsPage({
           <button
             type="button"
             onClick={() => setIsVendorModalOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 focus:ring-4 focus:ring-amber-500/40"
+            className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 focus:ring-4 focus:ring-amber-500/40"
           >
             <span>+</span>
             <span>Register Vendor</span>
@@ -333,7 +333,7 @@ export default function VendorsPage({
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                 selectedCategory === cat.id
-                  ? 'bg-amber-600 text-white'
+                  ? 'bg-amber-800 text-white'
                   : 'bg-white text-stone-700 border border-stone-300 hover:bg-stone-50'
               }`}
             >
@@ -431,7 +431,7 @@ export default function VendorsPage({
                       <button
                         type="button"
                         onClick={() => handleUpdateStatus(v.id, nextStep)}
-                        className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition-colors"
                       >
                         Advance to {nextStep} &rarr;
                       </button>
@@ -580,7 +580,7 @@ export default function VendorsPage({
             <button
               type="submit"
               disabled={submittingVendor}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {submittingVendor ? 'Registering...' : 'Register Vendor'}
             </button>
@@ -665,7 +665,7 @@ export default function VendorsPage({
             <button
               type="submit"
               disabled={submittingQuote}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {submittingQuote ? 'Submitting...' : 'Save Quotation'}
             </button>

@@ -247,14 +247,20 @@ export async function executeAiSectionRegeneration<T extends PlanSectionName>(
 Regenerate ONLY the section "${sectionName}" for the following event brief:
 ${wrapUntrustedEventBrief(JSON.stringify(input, null, 2))}
 
-Return ONLY a valid JSON object matching the schema for section "${sectionName}".
+Return ONLY a valid JSON object matching the required schema for section "${sectionName}".
+${sectionName === 'executiveConcept' ? 'Required keys: title (string), tagline (string), overview (string), keyHighlights (array of strings), atmosphere (string).' : ''}
+Ensure the output directly contains these keys without nested parent wrappers.
 `;
 
   try {
     const rawJson = await callGeminiRaw(userPrompt, buildSystemInstruction(), apiKey);
     const parsed = JSON.parse(rawJson);
+    const candidateData =
+      parsed && typeof parsed === 'object' && sectionName in parsed
+        ? (parsed as Record<string, unknown>)[sectionName]
+        : parsed;
     const schema = SECTION_SCHEMAS[sectionName];
-    const validatedSection = schema.parse(parsed) as EventArchitectPlan[T];
+    const validatedSection = schema.parse(candidateData) as EventArchitectPlan[T];
 
     return {
       data: validatedSection,

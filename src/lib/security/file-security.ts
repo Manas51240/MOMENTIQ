@@ -146,3 +146,4 @@ export function validateFileBufferMagicBytes(
 
   return { isValid: true };
 }
+

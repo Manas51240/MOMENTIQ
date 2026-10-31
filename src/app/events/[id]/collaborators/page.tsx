@@ -392,7 +392,7 @@ export default function CollaboratorsPage({
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                    className="w-full py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
                   >
                     {submitting ? 'Granting Access...' : 'Invite Collaborator'}
                   </button>
@@ -451,10 +451,10 @@ export default function CollaboratorsPage({
                     <table className="w-full text-left text-sm">
                       <thead className="bg-[#fbf8f3] text-stone-700 text-xs uppercase font-bold border-b border-stone-200">
                         <tr>
-                          <th className="py-3 px-4">Member Name</th>
-                          <th className="py-3 px-4">Email</th>
-                          <th className="py-3 px-4">RBAC Role</th>
-                          <th className="py-3 px-4 text-right">Actions</th>
+                          <th scope="col" className="py-3 px-4">Member Name</th>
+                          <th scope="col" className="py-3 px-4">Email</th>
+                          <th scope="col" className="py-3 px-4">RBAC Role</th>
+                          <th scope="col" className="py-3 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
@@ -516,10 +516,10 @@ export default function CollaboratorsPage({
                     <table className="w-full text-left text-xs">
                       <thead className="bg-[#fbf8f3] text-stone-700 uppercase font-bold border-b border-stone-200">
                         <tr>
-                          <th className="py-2.5 px-3">Invited Email</th>
-                          <th className="py-2.5 px-3">Intended Role</th>
-                          <th className="py-2.5 px-3">Token Code</th>
-                          <th className="py-2.5 px-3">Expires</th>
+                          <th scope="col" className="py-2.5 px-3">Invited Email</th>
+                          <th scope="col" className="py-2.5 px-3">Intended Role</th>
+                          <th scope="col" className="py-2.5 px-3">Token Code</th>
+                          <th scope="col" className="py-2.5 px-3">Expires</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
@@ -681,7 +681,7 @@ export default function CollaboratorsPage({
                 <button
                   type="submit"
                   disabled={transferring || !transferTargetUserId}
-                  className="px-4 py-2 text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow-sm disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-bold bg-amber-800 hover:bg-amber-900 text-white rounded-lg shadow-sm disabled:opacity-50"
                 >
                   {transferring ? 'Transferring...' : 'Confirm Ownership Transfer'}
                 </button>

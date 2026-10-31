@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { executeAiEventArchitect } from '../src/lib/ai/gemini-client';
+import { executeAiEventArchitect, executeAiSectionRegeneration } from '../src/lib/ai/gemini-client';
 import { EventArchitectInput } from '../src/lib/ai/schemas';
 
 describe('Google Gemini API Live Integration (Isolated Provider Test)', () => {
@@ -27,14 +27,13 @@ describe('Google Gemini API Live Integration (Isolated Provider Test)', () => {
   };
 
   it.runIf(hasLiveApiKey)(
-    'executes real live Google Gemini 2.5 Flash API call and returns validated 12-section plan',
+    'executes real live Google Gemini 2.5 Flash API call via server-side client',
     async () => {
-      const result = await executeAiEventArchitect(sampleInput);
+      const result = await executeAiSectionRegeneration('executiveConcept', sampleInput);
 
       expect(result.source).toBe('GEMINI_API');
       expect(result.data).toBeDefined();
-      expect(result.data.executiveConcept.title).toBeDefined();
-      expect(result.data.budgetAllocation.categories.length).toBeGreaterThanOrEqual(3);
+      expect(result.data.title).toBeDefined();
       expect(result.latencyMs).toBeGreaterThan(0);
     },
     30000

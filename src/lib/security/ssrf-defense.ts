@@ -74,3 +74,4 @@ export function validateExternalUrl(urlString: string): {
 
   return { isSafe: true, normalizedUrl: parsed.toString() };
 }
+

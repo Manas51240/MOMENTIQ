@@ -244,7 +244,7 @@ export default function GuestsPage({
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}
-              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 focus:ring-4 focus:ring-amber-500/40"
+              className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 focus:ring-4 focus:ring-amber-500/40"
             >
               <span>+</span>
               <span>Add Guest</span>
@@ -334,13 +334,13 @@ export default function GuestsPage({
             <table className="w-full text-left text-sm">
               <thead className="bg-[#fbf8f3] text-stone-700 text-xs uppercase font-bold border-b border-stone-200">
                 <tr>
-                  <th className="py-3 px-4">Guest Name</th>
-                  <th className="py-3 px-4">Contact</th>
-                  <th className="py-3 px-4">Seats</th>
-                  <th className="py-3 px-4">RSVP</th>
-                  <th className="py-3 px-4">Table</th>
-                  <th className="py-3 px-4">Check-In</th>
-                  <th className="py-3 px-4 text-right">Invitation & Portal</th>
+                  <th scope="col" className="py-3 px-4">Guest Name</th>
+                  <th scope="col" className="py-3 px-4">Contact</th>
+                  <th scope="col" className="py-3 px-4">Seats</th>
+                  <th scope="col" className="py-3 px-4">RSVP</th>
+                  <th scope="col" className="py-3 px-4">Table</th>
+                  <th scope="col" className="py-3 px-4">Check-In</th>
+                  <th scope="col" className="py-3 px-4 text-right">Invitation & Portal</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -401,7 +401,7 @@ export default function GuestsPage({
                             setSelectedGuest(g);
                             setIsInviteModalOpen(true);
                           }}
-                          className="px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold"
+                          className="px-2.5 py-1 rounded bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold"
                         >
                           Wording
                         </button>
@@ -525,7 +525,7 @@ export default function GuestsPage({
             <button
               type="submit"
               disabled={submittingGuest}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {submittingGuest ? 'Registering...' : 'Add Guest'}
             </button>
@@ -569,7 +569,7 @@ John Connor,john@example.com,+1-555-0102,1,None`}
             <button
               type="submit"
               disabled={importing}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {importing ? 'Importing...' : 'Import Guests'}
             </button>
@@ -607,7 +607,7 @@ John Connor,john@example.com,+1-555-0102,1,None`}
               type="button"
               onClick={handleGenerateCopy}
               disabled={generatingCopy}
-              className="px-4 py-1.5 rounded-lg bg-amber-600 text-white font-bold text-xs hover:bg-amber-700 disabled:opacity-50"
+              className="px-4 py-1.5 rounded-lg bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 disabled:opacity-50"
             >
               {generatingCopy ? 'Drafting...' : 'Generate Copy'}
             </button>

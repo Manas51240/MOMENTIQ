@@ -154,7 +154,7 @@ export default function EventReportsPage({
                   onClick={() => setSelectedReport(r.type)}
                   className={`px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                     isSelected
-                      ? 'bg-amber-600 text-white shadow-sm'
+                      ? 'bg-amber-800 text-white shadow-sm'
                       : 'bg-white hover:bg-stone-100 text-stone-700 border border-stone-300'
                   }`}
                   aria-pressed={isSelected}

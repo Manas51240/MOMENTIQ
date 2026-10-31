@@ -70,7 +70,7 @@ export function Alert({
           type="button"
           onClick={onClose}
           aria-label="Dismiss alert"
-          className="text-stone-500 hover:text-stone-800 p-1 rounded hover:bg-stone-200/50 transition-colors"
+          className="text-stone-500 hover:text-stone-800 p-1 rounded-md hover:bg-stone-200/50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-800"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

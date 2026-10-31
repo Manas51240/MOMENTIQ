@@ -243,7 +243,7 @@ export default function BudgetPage({
             <button
               type="button"
               onClick={() => setIsExpenseModalOpen(true)}
-              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2 focus:ring-4 focus:ring-amber-500/40"
+              className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2 focus:ring-4 focus:ring-amber-500/40"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -341,11 +341,11 @@ export default function BudgetPage({
             <table className="w-full text-left text-sm">
               <thead className="bg-[#fbf8f3] text-stone-700 text-xs uppercase font-bold border-b border-stone-200">
                 <tr>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Allocated</th>
-                  <th className="py-3 px-4">Committed</th>
-                  <th className="py-3 px-4">Actual Paid</th>
-                  <th className="py-3 px-4">Variance</th>
+                  <th scope="col" className="py-3 px-4">Category</th>
+                  <th scope="col" className="py-3 px-4">Allocated</th>
+                  <th scope="col" className="py-3 px-4">Committed</th>
+                  <th scope="col" className="py-3 px-4">Actual Paid</th>
+                  <th scope="col" className="py-3 px-4">Variance</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -390,12 +390,12 @@ export default function BudgetPage({
               <table className="w-full text-left text-sm">
                 <thead className="bg-[#fbf8f3] text-stone-700 text-xs uppercase font-bold border-b border-stone-200">
                   <tr>
-                    <th className="py-3 px-4">Expense Title</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Total Amount</th>
-                    <th className="py-3 px-4">Paid to Date</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
+                    <th scope="col" className="py-3 px-4">Expense Title</th>
+                    <th scope="col" className="py-3 px-4">Category</th>
+                    <th scope="col" className="py-3 px-4">Total Amount</th>
+                    <th scope="col" className="py-3 px-4">Paid to Date</th>
+                    <th scope="col" className="py-3 px-4">Status</th>
+                    <th scope="col" className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
@@ -463,7 +463,7 @@ export default function BudgetPage({
               type="button"
               onClick={handleSimulateGuests}
               disabled={simulating}
-              className="mt-5 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-900 font-bold text-sm shadow-md transition-colors"
+              className="mt-5 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-md transition-colors"
             >
               {simulating ? 'Calculating...' : 'Run Simulation'}
             </button>
@@ -593,7 +593,7 @@ export default function BudgetPage({
             <button
               type="submit"
               disabled={submittingExpense}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {submittingExpense ? 'Saving...' : 'Add Expense'}
             </button>
@@ -674,7 +674,7 @@ export default function BudgetPage({
             <button
               type="submit"
               disabled={submittingPayment}
-              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50"
+              className="px-5 py-2 text-xs font-bold rounded-lg bg-amber-800 text-white hover:bg-amber-900 disabled:opacity-50"
             >
               {submittingPayment ? 'Processing...' : 'Record Transaction'}
             </button>
