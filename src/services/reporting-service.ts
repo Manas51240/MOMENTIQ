@@ -643,9 +643,10 @@ export class ReportingService {
   public static async exportReportCsv(userId: string, eventId: string, reportType: ReportType) {
     const data = await this.getReportData(userId, eventId, reportType);
     let csvContent = '';
-    const eventSlug = ('event' in data && data.event && 'title' in data.event ? (data.event as any).title : 'event')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-');
+    const hasEvent = 'event' in data && typeof data.event === 'object' && data.event !== null;
+    const rawTitle = hasEvent ? (data.event as { title?: unknown })?.title : undefined;
+    const titleStr = typeof rawTitle === 'string' ? rawTitle : 'event';
+    const eventSlug = titleStr.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const filename = `momentiq-${reportType}-${eventSlug}-${new Date().toISOString().split('T')[0]}.csv`;
 
     switch (reportType) {
@@ -826,8 +827,10 @@ export class ReportingService {
     const data = await this.getReportData(userId, eventId, reportType);
     const doc = new SimplePdfDocument();
 
-    const eventTitle = ('event' in data && data.event && 'title' in data.event ? (data.event as any).title : 'Event');
-    const currency = ('event' in data && data.event && 'currency' in data.event ? (data.event as any).currency : 'INR');
+    const hasEventObj = 'event' in data && typeof data.event === 'object' && data.event !== null;
+    const eventObj = hasEventObj ? (data.event as { title?: unknown; currency?: unknown }) : undefined;
+    const eventTitle = typeof eventObj?.title === 'string' ? eventObj.title : 'Event';
+    const currency = typeof eventObj?.currency === 'string' ? eventObj.currency : 'INR';
 
     doc.addHeader({
       title: data.metadata.title,

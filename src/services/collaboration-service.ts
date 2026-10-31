@@ -194,8 +194,9 @@ export class CollaborationService {
       throw new Error('You are already the Event Owner');
     }
 
-    const member = await db.$transaction(async (tx) => {
-      const m = await tx.eventMember.upsert({
+    const member = await db.$transaction(
+      async (tx) => {
+        const m = await tx.eventMember.upsert({
         where: {
           eventId_userId: {
             eventId: invite.eventId,
@@ -222,7 +223,8 @@ export class CollaborationService {
       });
 
       return m;
-    });
+    },
+    { maxWait: 15000, timeout: 30000 });
 
     await logActivity({
       eventId: invite.eventId,
@@ -359,18 +361,21 @@ export class CollaborationService {
       );
     }
 
-    await db.$transaction(async (tx) => {
-      // Unassign any tasks assigned to this collaborator
-      await tx.task.updateMany({
-        where: { eventId, assignedToId: targetUserId },
-        data: { assignedToId: null },
-      });
+    await db.$transaction(
+      async (tx) => {
+        // Unassign any tasks assigned to this collaborator
+        await tx.task.updateMany({
+          where: { eventId, assignedToId: targetUserId },
+          data: { assignedToId: null },
+        });
 
-      // Delete membership
-      await tx.eventMember.delete({
-        where: { id: targetMember.id },
-      });
-    });
+        // Delete membership
+        await tx.eventMember.delete({
+          where: { id: targetMember.id },
+        });
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
 
     await logActivity({
       eventId,
@@ -421,7 +426,8 @@ export class CollaborationService {
     }
 
     // Execute ownership transfer in a strict transaction
-    await db.$transaction(async (tx) => {
+    await db.$transaction(
+      async (tx) => {
       // 1. Update event ownerId
       await tx.event.update({
         where: { id: eventId },
@@ -470,7 +476,8 @@ export class CollaborationService {
           message: `You transferred ownership of "${event.title}" to ${newOwner.name}. You are now an Event Admin.`,
         },
       });
-    });
+    },
+    { maxWait: 15000, timeout: 30000 });
 
     await logActivity({
       eventId,

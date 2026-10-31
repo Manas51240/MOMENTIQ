@@ -14,11 +14,10 @@ In accordance with rigorous engineering evaluation standards, this document tran
 
 ## 2. Identified Architectural Boundaries
 
-### 2.1 SQLite Storage Engine & Concurrent Multi-Writer Limits
-- **Current Architecture:** The project uses SQLite via Prisma ORM (`DATABASE_URL="file:./dev.db"`).
-- **Current Capability:** Highly optimized for single-instance deployments, local evaluation, and low-to-medium traffic events. All transactions are atomic and protected via `prisma.$transaction`.
-- **Limitation:** SQLite operates with database-level write locks. Under extreme write contention (>50 simultaneous write operations per second across multiple concurrent web workers), write lock contention may occur.
-- **Production Recommendation:** For large-scale distributed deployments, migrate to PostgreSQL or AWS Aurora Serverless by updating `provider = "postgresql"` in `prisma/schema.prisma` and running `prisma migrate deploy`. The relational schema and indexing strategy are 100% compatible with PostgreSQL.
+### 2.1 Cloud PostgreSQL Storage Engine & Connection Pooling
+- **Current Architecture:** The project is powered by Neon Serverless PostgreSQL with connection pooling (`DATABASE_URL=postgresql://...`).
+- **Current Capability:** Fully distributed cloud relational database supporting multi-worker concurrency, ACID transactions, and pessimistic row-level locking (`SELECT ... FOR UPDATE`) on financial ledger operations.
+- **Production Recommendation:** For extreme enterprise scale (>10,000 requests/second), scale read replicas on Neon and enable edge caching for public read-only RSVP tokens.
 
 ### 2.2 Transactional Email Delivery Provider Integration
 - **Current Architecture:** Invitation generation produces secure, tokenized magic URLs (`/rsvp/[code]`). In development and offline testing, delivery is recorded with provider status `MOCK_DELIVERED` or `PENDING_DELIVERY`.

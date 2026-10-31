@@ -117,3 +117,66 @@
 - **Verification Evidence:**
   - Gemini API client tests passed, with seamless fallback handling if upstream latency exceeds the limit.
 
+---
+
+### DEF-08: N+1 Category Inserts & Remote Transaction Timeout in Event Creation
+- **Parameter:** Efficiency & Testing Reliability
+- **Initial Finding:** During remote PostgreSQL execution, `createEvent` sequentially executed 8 separate `tx.budgetCategory.create(...)` calls inside a transaction, exceeding Prisma's default 5000ms interactive transaction timeout.
+- **Root Cause:** Sequential category seeding caused 12 consecutive roundtrips over remote WAN connection.
+- **Remediation:**
+  - Refactored category insertion in [`src/services/event-service.ts`](file:///e:/Celebria_Event_Planner/src/services/event-service.ts) to a single batch insert via `tx.budgetCategory.createMany`.
+  - Added transaction options `{ maxWait: 15000, timeout: 30000 }` across all critical multi-entity operations in `event-service.ts` and `collaboration-service.ts`.
+- **Verification Evidence:**
+  - `tests/guest-management.test.ts`: All 11 tests passed in 111s without transaction timeouts.
+
+---
+
+### DEF-09: Financial Concurrency Race Condition Under Parallel Payment Load
+- **Parameter:** Security & Financial Ledger Integrity
+- **Initial Finding:** Executing 10 simultaneous payments against the same expense resulted in a read-committed race condition, where the final status ended in `PARTIAL` instead of `COMPLETED`.
+- **Root Cause:** Under concurrent execution in PostgreSQL, transactions read uncommitted payment state concurrently without row-level synchronization.
+- **Remediation:**
+  - In [`src/services/budget-service.ts`](file:///e:/Celebria_Event_Planner/src/services/budget-service.ts), enforced PostgreSQL pessimistic row-level locking: `await tx.$executeRaw`SELECT 1 FROM "Expense" WHERE "id" = ${parsed.expenseId} FOR UPDATE``.
+  - Added transaction timeout resilience `{ maxWait: 15000, timeout: 30000 }`.
+- **Verification Evidence:**
+  - `tests/security-red-team.test.ts` Test 26 (Concurrent Financial Modification) passed with 10 concurrent payments processed atomically and status verified as `COMPLETED`.
+
+---
+
+### DEF-10: Loose `any` Type Casts in Core Reporting and AI Services
+- **Parameter:** Code Quality & TypeScript Strict Compliance
+- **Initial Finding:** Runtime assertions in `src/services/reporting-service.ts` cast `(data.event as any).title` and `(data.event as any).currency`; `src/lib/ai/creative-gemini.ts` typed options as `any`.
+- **Root Cause:** Incomplete type narrowing in report exporter dispatch and generic AI creative response handler.
+- **Remediation:**
+  - In [`src/services/reporting-service.ts`](file:///e:/Celebria_Event_Planner/src/services/reporting-service.ts): replaced `any` casts with type guards checking `hasEventObj` and structural string types.
+  - In [`src/lib/ai/creative-gemini.ts`](file:///e:/Celebria_Event_Planner/src/lib/ai/creative-gemini.ts): typed option content cleanly as generic `T` with strict parameter constraints.
+  - In [`src/lib/security/auth-middleware.ts`](file:///e:/Celebria_Event_Planner/src/lib/security/auth-middleware.ts): replaced `(req as any).cookies` with `req instanceof NextRequest`.
+- **Verification Evidence:**
+  - `npm run typecheck`: 0 errors.
+  - `npm run lint`: 0 warnings, 0 errors.
+
+---
+
+### DEF-11: Default Currency Mismatch with Indian Celebration Target
+- **Parameter:** Problem Statement Alignment & Localization
+- **Initial Finding:** Application defaulted to USD with `$`, inconsistent with Indian celebration requirements.
+- **Root Cause:** Legacy schema defaults and components initialized with USD.
+- **Remediation:**
+  - Updated Prisma schema defaults in [`prisma/schema.prisma`](file:///e:/Celebria_Event_Planner/prisma/schema.prisma) across `Event`, `EventBudget`, `Expense`, and `VendorQuote` to `INR`.
+  - Updated financial calculators ([`src/lib/financial/calculator.ts`](file:///e:/Celebria_Event_Planner/src/lib/financial/calculator.ts)) to format Indian Rupee (`₹`) with Indian numbering system grouping (Lakhs & Crores).
+  - Seeded showcase celebrations in India: The Oberoi Udaivilas Royal Wedding in Udaipur (₹25,00,000) and Aer Sky Lounge Birthday in Mumbai (₹5,00,000).
+- **Verification Evidence:**
+  - Dashboard and all 8 event subpages display `₹` with proper Indian numbering.
+
+---
+
+### DEF-12: Reverse-Proxy CSRF Validation & Dual Cookie Session Continuity
+- **Parameter:** Security & Authentication Reliability
+- **Initial Finding:** Behind reverse proxies, standard `host` headers can diverge from `x-forwarded-host`, and transitioning app names risked session cookie invalidation.
+- **Root Cause:** CSRF origin check only validated against `host`; cookie parser only inspected `celebra_session`.
+- **Remediation:**
+  - In [`src/lib/security/auth-middleware.ts`](file:///e:/Celebria_Event_Planner/src/lib/security/auth-middleware.ts): added `x-forwarded-host` fallback and supported both `momentiq_session` and `celebra_session`.
+- **Verification Evidence:**
+  - `tests/security-red-team.test.ts` Test 13 passed; login/register routes issue both cookies.
+
+

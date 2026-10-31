@@ -166,8 +166,8 @@ export async function executeCreativeGeneration<T = any>(
   };
 
   const apiKey = process.env.GEMINI_API_KEY;
-  let optionAContent: any;
-  let optionBContent: any;
+  let optionAContent: unknown;
+  let optionBContent: unknown;
   let source: 'GEMINI_API' | 'DETERMINISTIC_FALLBACK' = 'DETERMINISTIC_FALLBACK';
 
   const schema = CREATIVE_CATEGORY_SCHEMAS[input.category];
@@ -220,13 +220,13 @@ export async function executeCreativeGeneration<T = any>(
     optionA: {
       title: `${input.tone} ${input.category.replace(/_/g, ' ')} Concept A`,
       styleVariant: 'Classic & Refined Direction',
-      content: optionAContent,
+      content: optionAContent as T,
     },
     optionB: input.generateComparison
       ? {
           title: `Alternative ${input.category.replace(/_/g, ' ')} Concept B`,
           styleVariant: 'Contemporary & Bold Direction',
-          content: optionBContent,
+          content: optionBContent as T,
         }
       : undefined,
     eventContext: {

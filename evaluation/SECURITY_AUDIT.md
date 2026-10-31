@@ -45,7 +45,7 @@ All 26 threat dimensions are defended by multi-layered server-side controls.
 | **23** | Secret Exposure in Client Bundles | Frontend bundle verification | Client-side bundles contain zero `GEMINI_API_KEY`, `SESSION_SECRET`, or database credentials. | **PASS** |
 | **24** | Insecure Cache Isolation | In-memory caches | Cache keys are prefixed with tenant ID (`event:${id}:...`) preventing cache bleed. | **PASS** |
 | **25** | Rate-Limit Bypass via IP Rotation | Rate Limiting Engine | Dual-key tracking: rate limits track both client IP and user account identifier. | **PASS** |
-| **26** | Concurrent Financial Modifications | Expense & Payment mutations | Prisma atomic transactions (`prisma.$transaction`) prevent double-spend and race conditions. | **PASS** |
+| **26** | Concurrent Financial Modifications | Expense & Payment mutations | Pessimistic row-level locking (`SELECT ... FOR UPDATE`) and Prisma atomic transactions prevent double-spend and race conditions under parallel payment load. | **PASS** |
 
 ---
 

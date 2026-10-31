@@ -44,8 +44,8 @@ export async function authenticateRequest(req: Request | NextRequest): Promise<A
 
   // 2. Fall back to Cookie header
   if (!token) {
-    if ('cookies' in req && typeof (req as any).cookies?.get === 'function') {
-      const cookieVal = (req as any).cookies.get('momentiq_session')?.value || (req as any).cookies.get('celebra_session')?.value;
+    if (req instanceof NextRequest) {
+      const cookieVal = req.cookies.get('momentiq_session')?.value || req.cookies.get('celebra_session')?.value;
       if (cookieVal) {
         token = cookieVal;
       }

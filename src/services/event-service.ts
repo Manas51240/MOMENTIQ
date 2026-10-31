@@ -40,74 +40,76 @@ export class EventService {
     const totalBudgetMinor = BigInt(parsed.budgetMinor);
 
     // Atomic transaction creating Event + Owner Membership + Preference + Budget + Categories
-    const result = await db.$transaction(async (tx) => {
-      // 1. Create Event
-      const event = await tx.event.create({
-        data: {
-          slug,
-          title: parsed.title,
-          description: parsed.description,
-          eventType: parsed.eventType,
-          startDate: new Date(parsed.startDate),
-          endDate: new Date(parsed.endDate),
-          venue: parsed.venue,
-          city: parsed.city,
-          country: parsed.country,
-          guestTarget: parsed.guestTarget,
-          budgetMinor: totalBudgetMinor,
-          currency: parsed.currency,
-          status: 'PLANNING',
-          ownerId: userId,
-        },
-      });
-
-      // 2. Create EventMember with OWNER role
-      await tx.eventMember.create({
-        data: {
-          eventId: event.id,
-          userId,
-          role: 'OWNER',
-        },
-      });
-
-      // 3. Initialize EventPreference
-      await tx.eventPreference.create({
-        data: {
-          eventId: event.id,
-          theme: 'Modern Celebration',
-          colorPaletteJson: JSON.stringify(['#b45309', '#6b21a8', '#f59e0b', '#fdf4ff']),
-          tone: 'Festive & Elegant',
-          culturalTraditionsJson: JSON.stringify([]),
-        },
-      });
-
-      // 4. Initialize EventBudget
-      await tx.eventBudget.create({
-        data: {
-          eventId: event.id,
-          totalBudgetMinor,
-          currency: parsed.currency,
-          contingencyPercent: 10,
-        },
-      });
-
-      // 5. Seed default budget categories with proportional allocations
-      for (const cat of DEFAULT_BUDGET_CATEGORIES) {
-        const catAllocMinor = BigInt(Math.floor(Number(totalBudgetMinor) * cat.allocatedShare));
-        await tx.budgetCategory.create({
+    const result = await db.$transaction(
+      async (tx) => {
+        // 1. Create Event
+        const event = await tx.event.create({
           data: {
-            eventId: event.id,
-            name: cat.name,
-            allocatedMinor: catAllocMinor,
-            spentMinor: BigInt(0),
-            icon: cat.icon,
-            color: cat.color,
+            slug,
+            title: parsed.title,
+            description: parsed.description,
+            eventType: parsed.eventType,
+            startDate: new Date(parsed.startDate),
+            endDate: new Date(parsed.endDate),
+            venue: parsed.venue,
+            city: parsed.city,
+            country: parsed.country,
+            guestTarget: parsed.guestTarget,
+            budgetMinor: totalBudgetMinor,
+            currency: parsed.currency,
+            status: 'PLANNING',
+            ownerId: userId,
           },
         });
-      }
 
-      return event;
-    });
+        // 2. Create EventMember with OWNER role
+        await tx.eventMember.create({
+          data: {
+            eventId: event.id,
+            userId,
+            role: 'OWNER',
+          },
+        });
+
+        // 3. Initialize EventPreference
+        await tx.eventPreference.create({
+          data: {
+            eventId: event.id,
+            theme: 'Modern Celebration',
+            colorPaletteJson: JSON.stringify(['#b45309', '#6b21a8', '#f59e0b', '#fdf4ff']),
+            tone: 'Festive & Elegant',
+            culturalTraditionsJson: JSON.stringify([]),
+          },
+        });
+
+        // 4. Initialize EventBudget
+        await tx.eventBudget.create({
+          data: {
+            eventId: event.id,
+            totalBudgetMinor,
+            currency: parsed.currency,
+            contingencyPercent: 10,
+          },
+        });
+
+        // 5. Seed default budget categories with proportional allocations (bulk insert)
+        const categoryData = DEFAULT_BUDGET_CATEGORIES.map((cat) => ({
+          eventId: event.id,
+          name: cat.name,
+          allocatedMinor: BigInt(Math.floor(Number(totalBudgetMinor) * cat.allocatedShare)),
+          spentMinor: BigInt(0),
+          icon: cat.icon,
+          color: cat.color,
+        }));
+
+        await tx.budgetCategory.createMany({
+          data: categoryData,
+        });
+
+        return event;
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
 
     // Record Activity Log
     await logActivity({

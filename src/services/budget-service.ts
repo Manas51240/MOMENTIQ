@@ -330,52 +330,58 @@ export class BudgetService {
 
     const amountMinor = BigInt(parsed.amountMinor);
 
-    const result = await db.$transaction(async (tx) => {
-      // 1. Create Payment record
-      const payment = await tx.payment.create({
-        data: {
-          eventId,
-          expenseId: parsed.expenseId,
-          amountMinor,
-          paymentMethod: parsed.paymentMethod,
-          transactionRef: parsed.transactionRef || null,
-          isRefund: parsed.isRefund,
-          paidAt: new Date(parsed.paidAt),
-          status: 'COMPLETED',
-        },
-      });
+    const result = await db.$transaction(
+      async (tx) => {
+        // Enforce pessimistic row-level lock on Expense to prevent concurrent financial race conditions
+        await tx.$executeRaw`SELECT 1 FROM "Expense" WHERE "id" = ${parsed.expenseId} FOR UPDATE`;
 
-      // 2. Fetch all payments including newly created one to compute total settled
-      const allPayments = await tx.payment.findMany({
-        where: { expenseId: parsed.expenseId, status: 'COMPLETED' },
-      });
+        // 1. Create Payment record
+        const payment = await tx.payment.create({
+          data: {
+            eventId,
+            expenseId: parsed.expenseId,
+            amountMinor,
+            paymentMethod: parsed.paymentMethod,
+            transactionRef: parsed.transactionRef || null,
+            isRefund: parsed.isRefund,
+            paidAt: new Date(parsed.paidAt),
+            status: 'COMPLETED',
+          },
+        });
 
-      let netSettledMinor = BigInt(0);
-      for (const p of allPayments) {
-        if (p.isRefund) {
-          netSettledMinor -= p.amountMinor;
-        } else {
-          netSettledMinor += p.amountMinor;
+        // 2. Fetch all payments including newly created one to compute total settled
+        const allPayments = await tx.payment.findMany({
+          where: { expenseId: parsed.expenseId, status: 'COMPLETED' },
+        });
+
+        let netSettledMinor = BigInt(0);
+        for (const p of allPayments) {
+          if (p.isRefund) {
+            netSettledMinor -= p.amountMinor;
+          } else {
+            netSettledMinor += p.amountMinor;
+          }
         }
-      }
 
-      // 3. Update expense status based on net settled
-      let newExpenseStatus = 'PENDING';
-      if (netSettledMinor >= expense.amountMinor) {
-        newExpenseStatus = 'COMPLETED';
-      } else if (netSettledMinor > BigInt(0)) {
-        newExpenseStatus = 'PARTIAL';
-      } else if (parsed.isRefund && netSettledMinor <= BigInt(0)) {
-        newExpenseStatus = 'REFUNDED';
-      }
+        // 3. Update expense status based on net settled
+        let newExpenseStatus = 'PENDING';
+        if (netSettledMinor >= expense.amountMinor) {
+          newExpenseStatus = 'COMPLETED';
+        } else if (netSettledMinor > BigInt(0)) {
+          newExpenseStatus = 'PARTIAL';
+        } else if (parsed.isRefund && netSettledMinor <= BigInt(0)) {
+          newExpenseStatus = 'REFUNDED';
+        }
 
-      await tx.expense.update({
-        where: { id: parsed.expenseId },
-        data: { status: newExpenseStatus },
-      });
+        await tx.expense.update({
+          where: { id: parsed.expenseId },
+          data: { status: newExpenseStatus },
+        });
 
-      return payment;
-    });
+        return payment;
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
 
     await logActivity({
       eventId,
