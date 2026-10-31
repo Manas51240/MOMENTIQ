@@ -130,7 +130,7 @@ async function callGeminiRaw(
  * Validates input, sanitizes against prompt injection and toxic abuse,
  * attempts Gemini generation, and falls back cleanly to deterministic generator.
  */
-export async function executeCreativeGeneration<T = any>(
+export async function executeCreativeGeneration<T = Record<string, unknown>>(
   input: CreativeGenerationInput,
   context: EventContextParams
 ): Promise<CreativeStudioResponse<T>> {

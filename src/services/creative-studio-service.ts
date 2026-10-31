@@ -174,12 +174,13 @@ export class CreativeStudioService {
       orderBy: { createdAt: 'desc' },
     });
 
-    return assets.map((a: any) => {
-      let parsedContent: any = {};
+    return assets.map((a) => {
+      let parsedContent: Record<string, unknown> = {};
       try {
-        parsedContent = JSON.parse(a.contentJson);
+        const parsed = JSON.parse(a.contentJson);
+        parsedContent = typeof parsed === 'object' && parsed !== null ? parsed : { raw: parsed };
       } catch {
-        parsedContent = a.contentJson;
+        parsedContent = { raw: a.contentJson };
       }
       return {
         ...a,

@@ -1,0 +1,6 @@
+{
+  "name": "MOMENTIQ - Intelligent Event Planning & Celebration Platform",
+  "description": "AI-powered enterprise celebration atelier with budget forecasting, DAG timeline scheduling, and predictive risk telemetry.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

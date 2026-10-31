@@ -3,7 +3,7 @@
  * Handles escaping, quotes, special characters, and formatting for financial numbers.
  */
 
-export interface CsvColumn<T> {
+export interface CsvColumn<T = Record<string, unknown>> {
   header: string;
   accessor: (item: T) => string | number | boolean | null | undefined;
 }
@@ -36,39 +36,57 @@ export function escapeCsvField(value: string | number | boolean | null | undefin
 }
 
 /**
- * Formats integer minor currency units (cents) into a clean decimal string, e.g. 12550 -> "125.50"
+ * Formats integer minor currency units (cents/paise) into a clean decimal string, e.g. 12550 -> "125.50"
  */
-export function formatMinorToCurrency(minor: number | bigint | string, currency = 'INR'): string {
-  const num = typeof minor === 'bigint' ? Number(minor) : Number(minor || 0);
-  const formatted = (num / 100).toFixed(2);
-  if (currency === 'INR' || currency === '₹') {
-    return `₹ ${formatted}`;
-  }
-  return `${currency} ${formatted}`;
+export function formatMinorUnitsToCsv(minorUnits: number | bigint | string): string {
+  const num = Number(minorUnits);
+  if (isNaN(num)) return '0.00';
+  return (num / 100).toFixed(2);
 }
 
 /**
- * Generates an RFC 4180 compliant CSV string from a dataset and column definitions.
+ * Formats minor units to currency representation with prefix.
+ */
+export function formatMinorToCurrency(minorUnits: number | bigint | string, currency = 'INR'): string {
+  const num = Number(minorUnits);
+  if (isNaN(num)) return `${currency} 0.00`;
+  return `${currency} ${(num / 100).toFixed(2)}`;
+}
+
+/**
+ * Generates an RFC 4180 compliant CSV string from an array of typed objects and column definitions.
  */
 export function generateCsv<T>(data: T[], columns: CsvColumn<T>[]): string {
-  const headerRow = columns.map((col) => escapeCsvField(col.header)).join(',');
-  const rows = data.map((item) =>
-    columns.map((col) => escapeCsvField(col.accessor(item))).join(',')
-  );
+  const lines: string[] = [];
 
-  return [headerRow, ...rows].join('\r\n');
+  // Header row
+  const headerRow = columns.map((col) => escapeCsvField(col.header)).join(',');
+  lines.push(headerRow);
+
+  // Data rows
+  for (const item of data) {
+    const row = columns.map((col) => escapeCsvField(col.accessor(item))).join(',');
+    lines.push(row);
+  }
+
+  return lines.join('\r\n');
+}
+
+export interface CsvSectionConfig<T = any> {
+  title: string;
+  description?: string;
+  columns: Array<{
+    header: string;
+    accessor: (item: T) => string | number | boolean | null | undefined;
+  }>;
+  data: T[];
 }
 
 /**
  * Generates a multi-section CSV string with section titles and summary headers.
  */
 export function generateMultiSectionCsv(
-  sections: Array<{
-    title: string;
-    description?: string;
-    columns: CsvColumn<any>[];
-    data: any[];
-  }>
+  sections: Array<CsvSectionConfig<any>>
 ): string {
   const lines: string[] = [];
 
@@ -85,9 +103,8 @@ export function generateMultiSectionCsv(
       lines.push(row);
     }
 
-    lines.push(''); // blank row between sections
+    lines.push(''); // Blank line separator between sections
   }
 
   return lines.join('\r\n');
 }
-

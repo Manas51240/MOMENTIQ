@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/database';
 
 // ==============================================================================
-// CELEBRA — Health Check & Diagnostics Endpoint
+// MOMENTIQ — Health Check & Diagnostics Endpoint
 // Verifies application status, database connectivity, and uptime
 // ==============================================================================
 
@@ -28,7 +28,7 @@ export async function GET() {
       status: dbStatus === 'healthy' ? 'pass' : 'warn',
       version: '1.0.0',
       timestamp: new Date().toISOString(),
-      service: 'CELEBRA Event Management Platform',
+      service: 'MOMENTIQ Intelligent Event Planning Platform',
       checks: {
         database: {
           status: dbStatus,

@@ -9,11 +9,161 @@ import { EventNavTabs } from '@/components/ui/EventNavTabs';
 import { StatusBadge, StatusVariant } from '@/components/ui/StatusBadge';
 import { Alert } from '@/components/ui/Alert';
 
+interface ReportCategory {
+  id: string;
+  name: string;
+  allocatedMinor: number;
+  spentMinor: number;
+  varianceMinor: number;
+  utilizationPercent: number;
+}
+
+interface ReportExpense {
+  id: string;
+  title: string;
+  category: string;
+  vendor?: string;
+  totalMinor: number;
+  status: string;
+}
+
+interface ReportGuest {
+  id: string;
+  name: string;
+  email?: string;
+  group?: string;
+  rsvpStatus: string;
+  dietary?: string;
+  dietaryRequirements?: string;
+  attendingCount?: number;
+  tableNumber?: number;
+  seatingTable?: string;
+  checkedIn: boolean;
+  [key: string]: unknown;
+}
+
+interface ReportVendor {
+  id: string;
+  name: string;
+  category: string;
+  contactName?: string;
+  phone?: string;
+  bookingStatus: string;
+  status?: string;
+  isVerified?: boolean;
+  estimateMinor?: number;
+  totalQuoteCostMinor?: number;
+  contractTotalMinor?: number;
+  [key: string]: unknown;
+}
+
+interface ReportRisk {
+  id: string;
+  title: string;
+  category: string;
+  probability?: number;
+  impact?: number;
+  riskScore: number;
+  severity?: string;
+  status: string;
+  mitigation?: string;
+  mitigationPlan?: string;
+  [key: string]: unknown;
+}
+
+interface ReportTask {
+  id: string;
+  title: string;
+  phase?: string;
+  milestone?: string;
+  priority: string;
+  status: string;
+  dueDate: string;
+  progressPercent?: number;
+  [key: string]: unknown;
+}
+
+interface ReportPayment {
+  id: string;
+  expenseTitle: string;
+  vendorName?: string;
+  amountMinor: number;
+  paymentMethod: string;
+  paidAt?: string;
+  createdAt?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+interface ReportSchedule {
+  id: string;
+  activity?: string;
+  title?: string;
+  time?: string;
+  timeSlot?: string;
+  dayNumber?: number;
+  location?: string;
+  leadPerson?: string;
+  [key: string]: unknown;
+}
+
 interface ReportMeta {
   type: string;
   title: string;
   description: string;
   availableFormats: string[];
+}
+
+interface ReportPayload {
+  type?: string;
+  metadata?: { title: string; description: string };
+  event?: { id?: string; title?: string; currency?: string; preferences?: { theme?: string; tone?: string; dietaryNotes?: string; [key: string]: any }; [key: string]: any };
+  preferences?: { theme?: string; tone?: string; dietaryNotes?: string; [key: string]: any };
+  summary?: {
+    totalBudgetMinor?: number | string;
+    totalSpentMinor?: number | string;
+    remainingBudgetMinor?: number | string;
+    pendingLiabilitiesMinor?: number | string;
+    utilizationPercent?: number | string;
+    totalGuests?: number;
+    totalInvited?: number;
+    attendingHeads?: number;
+    attendingCount?: number;
+    declinedCount?: number;
+    pendingCount?: number;
+    checkedInCount?: number;
+    totalRisks?: number;
+    unresolvedCount?: number;
+    highHazardCount?: number;
+    totalMilestones?: number;
+    completedMilestones?: number;
+    totalTasks?: number;
+    completedTasks?: number;
+    progressPercent?: number;
+    totalVendors?: number;
+    confirmedVendors?: number;
+    totalContractValueMinor?: number | string;
+    totalPaidMinor?: number | string;
+    actualAttendingHeads?: number;
+    targetGuests?: number;
+    actualCheckedInHeads?: number;
+    taskCompletionPercent?: number;
+    allRisksResolved?: boolean;
+    [key: string]: any;
+  };
+  categories?: ReportCategory[];
+  expenses?: ReportExpense[];
+  guests?: ReportGuest[];
+  groups?: Array<{ name: string; guestCount: number }>;
+  seating?: Array<{ tableName: string; capacity: number; assignedCount: number }>;
+  milestones?: Array<{ title: string; targetDate: string; isCompleted: boolean }>;
+  tasks?: ReportTask[];
+  schedules?: ReportSchedule[];
+  vendors?: ReportVendor[];
+  risks?: ReportRisk[];
+  payments?: ReportPayment[];
+  currency?: string;
+  [key: string]: any;
 }
 
 export default function EventReportsPage({
@@ -26,7 +176,7 @@ export default function EventReportsPage({
 
   const [reports, setReports] = useState<ReportMeta[]>([]);
   const [selectedReport, setSelectedReport] = useState<string>('budget-expenses');
-  const [reportData, setReportData] = useState<any>(null);
+  const [reportData, setReportData] = useState<ReportPayload | null>(null);
   const [loadingList, setLoadingList] = useState(true);
   const [loadingData, setLoadingData] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -83,7 +233,7 @@ export default function EventReportsPage({
     window.open(url, '_blank');
   };
 
-  const formatMinor = (minor: number | string | bigint, currency = 'INR') => {
+  const formatMinor = (minor: number | string | bigint | undefined | null, currency = 'INR') => {
     const num = Number(minor || 0) / 100;
     if (currency === 'INR' || currency === '₹') {
       return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -246,7 +396,7 @@ export default function EventReportsPage({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-200">
-                        {reportData.categories?.map((c: any) => (
+                        {reportData.categories?.map((c: ReportCategory) => (
                           <tr key={c.id} className="hover:bg-stone-50">
                             <td className="px-4 py-3 font-semibold text-stone-900">{c.name}</td>
                             <td className="px-4 py-3 text-right">{formatMinor(c.allocatedMinor, reportData.event?.currency)}</td>
@@ -275,7 +425,7 @@ export default function EventReportsPage({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-200">
-                        {reportData.expenses?.map((e: any) => (
+                        {reportData.expenses?.map((e: ReportExpense) => (
                           <tr key={e.id} className="hover:bg-stone-50">
                             <td className="px-4 py-3 font-semibold text-stone-900">{e.title}</td>
                             <td className="px-4 py-3 text-stone-600">{e.category}</td>
@@ -334,7 +484,7 @@ export default function EventReportsPage({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-200">
-                        {reportData.guests?.map((g: any) => (
+                        {reportData.guests?.map((g: ReportGuest) => (
                           <tr key={g.id} className="hover:bg-stone-50">
                             <td className="px-4 py-3 font-semibold text-stone-900">{g.name}</td>
                             <td className="px-4 py-3 text-stone-600">{g.group}</td>
@@ -371,7 +521,7 @@ export default function EventReportsPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-stone-200">
-                      {reportData.vendors?.map((v: any) => (
+                      {reportData.vendors?.map((v: ReportVendor) => (
                         <tr key={v.id} className="hover:bg-stone-50">
                           <td className="px-4 py-3 font-semibold text-stone-900">{v.name}</td>
                           <td className="px-4 py-3 text-stone-600">{v.category}</td>
@@ -380,8 +530,8 @@ export default function EventReportsPage({
                               {v.isVerified ? 'VERIFIED' : 'UNVERIFIED'}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right">{formatMinor(v.estimateMinor, reportData.event?.currency)}</td>
-                          <td className="px-4 py-3 text-right font-bold text-amber-700">{formatMinor(v.totalQuoteCostMinor, reportData.event?.currency)}</td>
+                          <td className="px-4 py-3 text-right">{formatMinor(v.estimateMinor || 0, reportData.event?.currency)}</td>
+                          <td className="px-4 py-3 text-right font-bold text-amber-700">{formatMinor(v.totalQuoteCostMinor || 0, reportData.event?.currency)}</td>
                           <td className="px-4 py-3 text-center">
                             <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-stone-100 text-stone-700">
                               {v.status}
@@ -426,7 +576,7 @@ export default function EventReportsPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-stone-200">
-                      {reportData.risks?.map((r: any) => (
+                      {reportData.risks?.map((r: ReportRisk) => (
                         <tr key={r.id} className="hover:bg-stone-50">
                           <td className="px-4 py-3 font-semibold text-stone-900">{r.title}</td>
                           <td className="px-4 py-3 text-stone-600">{r.category}</td>
@@ -481,7 +631,7 @@ export default function EventReportsPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-stone-200">
-                      {reportData.tasks?.map((t: any) => (
+                      {reportData.tasks?.map((t: ReportTask) => (
                         <tr key={t.id} className="hover:bg-stone-50">
                           <td className="px-4 py-3 font-semibold text-stone-900">{t.title}</td>
                           <td className="px-4 py-3 text-stone-600">{t.milestone}</td>
@@ -543,7 +693,7 @@ export default function EventReportsPage({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-stone-200">
-                      {reportData.payments?.map((p: any) => (
+                      {reportData.payments?.map((p: ReportPayment) => (
                         <tr key={p.id} className="hover:bg-stone-50">
                           <td className="px-4 py-3 text-stone-600">{p.paidAt}</td>
                           <td className="px-4 py-3 font-semibold text-stone-900">
@@ -591,7 +741,7 @@ export default function EventReportsPage({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-200">
-                        {reportData.schedules?.map((s: any) => (
+                        {reportData.schedules?.map((s: ReportSchedule) => (
                           <tr key={s.id} className="hover:bg-stone-50">
                             <td className="px-4 py-3 text-center font-bold">{s.dayNumber}</td>
                             <td className="px-4 py-3 text-stone-600">{s.time}</td>

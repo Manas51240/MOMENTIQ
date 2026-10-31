@@ -51,6 +51,57 @@ const ROLE_DEFINITIONS: Record<
   },
 };
 
+interface MemberRecord {
+  id: string;
+  userId: string;
+  role: EventRole;
+  user?: {
+    name?: string;
+    email: string;
+  };
+}
+
+interface InvitationRecord {
+  id: string;
+  email: string;
+  role: EventRole;
+  token: string;
+  expiresAt: string;
+}
+
+interface ActivityLogRecord {
+  id: string;
+  action: string;
+  entityType?: string;
+  entityId?: string;
+  timestamp: string;
+  performedBy?: {
+    name?: string;
+    email: string;
+  };
+  details?: Record<string, unknown>;
+}
+
+interface NotificationRecord {
+  id: string;
+  title: string;
+  message: string;
+  createdAt: string;
+  read: boolean;
+}
+
+interface CollaboratorData {
+  isOwner?: boolean;
+  canManageMembers?: boolean;
+  callerRole?: EventRole;
+  currentUserRole?: EventRole;
+  members: MemberRecord[];
+  invitations: InvitationRecord[];
+  pendingInvitations?: InvitationRecord[];
+  owner?: { id: string; name?: string; email: string };
+  [key: string]: unknown;
+}
+
 export default function CollaboratorsPage({
   params,
 }: {
@@ -62,9 +113,9 @@ export default function CollaboratorsPage({
   const [activeTab, setActiveTab] = useState<'MEMBERS' | 'ACTIVITY' | 'NOTIFICATIONS'>('MEMBERS');
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
-  const [activityLogs, setActivityLogs] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [data, setData] = useState<CollaboratorData | null>(null);
+  const [activityLogs, setActivityLogs] = useState<ActivityLogRecord[]>([]);
+  const [notifications, setNotifications] = useState<NotificationRecord[]>([]);
   const [alertInfo, setAlertInfo] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null);
 
   // Invite Member Form State
@@ -458,7 +509,7 @@ export default function CollaboratorsPage({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
-                        {members.map((m: any) => {
+                        {members.map((m: MemberRecord) => {
                           const roleMeta = ROLE_DEFINITIONS[m.role as EventRole] || ROLE_DEFINITIONS.VIEWER;
                           return (
                             <tr key={m.id} className="hover:bg-stone-50/50">
@@ -524,7 +575,7 @@ export default function CollaboratorsPage({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
-                        {invitations.map((inv: any) => (
+                        {invitations.map((inv: InvitationRecord) => (
                           <tr key={inv.id}>
                             <td className="py-2.5 px-3 font-semibold text-stone-800">{inv.email}</td>
                             <td className="py-2.5 px-3">
@@ -572,7 +623,7 @@ export default function CollaboratorsPage({
               </p>
             ) : (
               <div className="space-y-3">
-                {activityLogs.map((log: any) => (
+                {activityLogs.map((log: ActivityLogRecord) => (
                   <div
                     key={log.id}
                     className="p-3.5 rounded-xl border border-stone-100 bg-stone-50/60 flex items-start justify-between gap-4 text-xs"
@@ -618,7 +669,7 @@ export default function CollaboratorsPage({
               </p>
             ) : (
               <div className="space-y-3">
-                {notifications.map((n: any) => (
+                {notifications.map((n: NotificationRecord) => (
                   <div
                     key={n.id}
                     className={`p-3.5 rounded-xl border flex items-start justify-between gap-4 text-xs ${
@@ -663,7 +714,7 @@ export default function CollaboratorsPage({
                   className="w-full rounded-lg border border-stone-300 p-2 text-sm bg-white"
                 >
                   <option value="">Choose an existing collaborator...</option>
-                  {members.map((m: any) => (
+                  {members.map((m: MemberRecord) => (
                     <option key={m.userId} value={m.userId}>
                       {m.user?.name} ({m.user?.email}) - Current: {m.role}
                     </option>

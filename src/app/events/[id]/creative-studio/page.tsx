@@ -46,7 +46,7 @@ export default function CreativeStudioPage({
 
   // Save Modal State
   const [isSavingAsset, setIsSavingAsset] = useState(false);
-  const [assetToSave, setAssetToSave] = useState<{ category: CreativeCategory; title: string; content: any } | null>(null);
+  const [assetToSave, setAssetToSave] = useState<{ category: CreativeCategory; title: string; content: Record<string, unknown> } | null>(null);
   const [saveCustomTitle, setSaveCustomTitle] = useState('');
   const [saveNotes, setSaveNotes] = useState('');
 
@@ -109,7 +109,7 @@ export default function CreativeStudioPage({
   };
 
   // Open Save Modal
-  const openSaveModal = (optionData: { title: string; content: any }) => {
+  const openSaveModal = (optionData: { title: string; content: Record<string, unknown> }) => {
     setAssetToSave({
       category: selectedCategory,
       title: optionData.title,

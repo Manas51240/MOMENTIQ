@@ -11,7 +11,7 @@ import { CreativeCategory } from '@/lib/ai/creative-schemas';
 export interface SaveAssetModalProps {
   isOpen: boolean;
   onClose: () => void;
-  assetToSave: { category: CreativeCategory; title: string; content: any } | null;
+  assetToSave: { category: CreativeCategory; title: string; content: Record<string, unknown> } | null;
   saveCustomTitle: string;
   onChangeCustomTitle: (val: string) => void;
   saveNotes: string;

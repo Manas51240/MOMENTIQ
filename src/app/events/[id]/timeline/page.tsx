@@ -18,7 +18,7 @@ interface TaskItem {
   dueDate: string;
   isMilestone: boolean;
   isUserLocked: boolean;
-  dependencies?: any[];
+  dependencies?: Array<{ id: string; dependsOnTaskId: string; dependencyType: string }>;
 }
 
 export default function TimelinePage({
@@ -438,7 +438,7 @@ export default function TimelinePage({
               <select
                 id="task-pri"
                 value={taskPriority}
-                onChange={(e) => setTaskPriority(e.target.value as any)}
+                onChange={(e) => setTaskPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL')}
                 className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 bg-[#fdfbf7]"
               >
                 <option value="LOW">Low</option>

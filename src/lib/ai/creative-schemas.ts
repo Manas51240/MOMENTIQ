@@ -360,7 +360,7 @@ export interface CreativeStudioResponse<T = unknown> {
 export const saveCreativeAssetSchema = z.object({
   category: creativeCategorySchema,
   title: z.string().min(1, 'Title is required').max(150),
-  content: z.record(z.any()), // JSON payload matching category schema
+  content: z.record(z.unknown()), // JSON payload matching category schema
   prompt: z.string().max(2000).default(''),
   notes: z.string().max(1000).optional(),
   isApproved: z.boolean().default(true),
@@ -374,7 +374,7 @@ export type SaveCreativeAssetInput = z.infer<typeof saveCreativeAssetSchema>;
  */
 export const updateCreativeAssetSchema = z.object({
   title: z.string().min(1).max(150).optional(),
-  content: z.record(z.any()).optional(),
+  content: z.record(z.unknown()).optional(),
   notes: z.string().max(1000).optional(),
   isApproved: z.boolean().optional(),
 });

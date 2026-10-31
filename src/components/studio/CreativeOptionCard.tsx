@@ -40,6 +40,26 @@ function formatRupeeMinor(minorUnits: number | undefined): string {
 /**
  * Renders detailed output card for a single creative option.
  */
+interface ColorSwatch {
+  hex: string;
+  name: string;
+  role: string;
+  usageTip: string;
+}
+
+interface AppetizerItem {
+  name: string;
+  description: string;
+  dietaryTags?: string[];
+}
+
+interface ShotMoment {
+  shotDescription: string;
+  timeOrPhase: string;
+  subjects: string;
+  priority: string;
+}
+
 export function CreativeOptionCard({
   option,
   category,
@@ -48,7 +68,7 @@ export function CreativeOptionCard({
   onCopyText,
   copiedId,
 }: CreativeOptionCardProps) {
-  const content = option.content;
+  const content = option.content as Record<string, any>;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col justify-between">
@@ -77,7 +97,7 @@ export function CreativeOptionCard({
           <div className="space-y-4">
             <p className="text-xs text-stone-600 italic">{content.moodDescription}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {content.colors?.map((color: any, idx: number) => (
+              {(content.colors as ColorSwatch[])?.map((color: ColorSwatch, idx: number) => (
                 <div key={idx} className="border border-stone-200 rounded-lg p-2.5 bg-stone-50 flex flex-col gap-1">
                   <div
                     className="w-full h-12 rounded-md shadow-inner border border-stone-300"
@@ -184,7 +204,7 @@ export function CreativeOptionCard({
 
             <div className="space-y-2">
               <strong className="text-stone-900 block">Appetizers &amp; Starters:</strong>
-              {content.appetizers?.map((app: any, idx: number) => (
+              {(content.appetizers as AppetizerItem[])?.map((app: AppetizerItem, idx: number) => (
                 <div key={idx} className="border-l-2 border-amber-500 pl-2">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-stone-800">{app.name}</span>
@@ -242,7 +262,7 @@ export function CreativeOptionCard({
           <div className="space-y-3 text-xs">
             <strong className="text-stone-900 block">Key Moments Shot List:</strong>
             <div className="space-y-2 max-h-56 overflow-y-auto no-scrollbar pr-1">
-              {content.keyMoments?.map((m: any, idx: number) => (
+              {(content.keyMoments as ShotMoment[])?.map((m: ShotMoment, idx: number) => (
                 <div
                   key={idx}
                   className="p-2 rounded bg-stone-50 border border-stone-100 flex items-start justify-between gap-2"

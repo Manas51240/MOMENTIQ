@@ -6,9 +6,35 @@
 
 import React from 'react';
 
+export interface CreativeSnippetData {
+  conceptName?: string;
+  tagline?: string;
+  narrative?: string;
+  keyMotifs?: string[];
+  themeTitle?: string;
+  cakeConcept?: string;
+  entranceFeature?: string;
+  culturalTradition?: string;
+  ritualsAndCeremonies?: Array<{ ritualName: string; meaning: string }>;
+  modernTwistSuggestion?: string;
+  monogramOrInitials?: string;
+  officialHashtags?: string[];
+  typographyRecommendation?: { primaryFont?: string };
+  instagramCaptions?: Array<{ hook: string }>;
+  easelBoardText?: string;
+  emceeWelcomeScript?: string;
+  livePerformance?: string;
+  soundtrackStyle?: string;
+  photoBoothConcept?: { backdrop?: string };
+  giftConcept?: string;
+  estimatedPerUnitCostMinor?: number;
+  packagingStyle?: string;
+  [key: string]: unknown;
+}
+
 interface RenderContentSnippetProps {
   category: string;
-  content: Record<string, any> | null | undefined;
+  content: CreativeSnippetData | null | undefined;
 }
 
 /**

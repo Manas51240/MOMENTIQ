@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 // ==============================================================================
-// CELEBRA — Cryptographic Session Token Generation & Verification
+// MOMENTIQ — Cryptographic Session Token Generation & Verification
 // ASVS Level 2: HMAC-SHA256 Signed Tokens, Timing-Safe Comparison & Expiry
 // ==============================================================================
 
@@ -16,7 +16,7 @@ export function getSessionSecret(): string {
         '[SECURITY CONFIGURATION ERROR] Missing required SESSION_SECRET in production mode. Refusing to boot with insecure fallback secret.'
       );
     }
-    return 'celebra_dev_fallback_secret_not_for_production_min_64_chars_length_1234567890';
+    return 'momentiq_dev_fallback_secret_not_for_production_min_64_chars_length_1234567890';
   }
   return secret;
 }

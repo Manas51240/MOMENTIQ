@@ -54,6 +54,9 @@ jobs:
       - name: 🔍 ESLint Verification
         run: npm run lint
 
+      - name: ⚡ High-Throughput Algorithmic Micro-Benchmarks
+        run: npm run bench
+
       - name: 🗄️ Generate Prisma Client & Migrate Test DB
         run: npx prisma db push --skip-generate
 

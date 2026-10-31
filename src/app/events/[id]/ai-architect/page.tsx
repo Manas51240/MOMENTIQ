@@ -10,7 +10,13 @@ import { Alert } from '@/components/ui/Alert';
 interface AiSection {
   key: string;
   title: string;
-  content: any;
+  content: unknown;
+}
+
+interface EventHeaderRecord {
+  id?: string;
+  title?: string;
+  [key: string]: unknown;
 }
 
 export default function AiArchitectPage({
@@ -20,11 +26,11 @@ export default function AiArchitectPage({
 }) {
   const { id } = use(params);
 
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventHeaderRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [committing, setCommitting] = useState(false);
-  const [plan, setPlan] = useState<any>(null);
+  const [plan, setPlan] = useState<Record<string, unknown> | null>(null);
   const [generationId, setGenerationId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<string>('executiveSummary');
   const [editableContent, setEditableContent] = useState<Record<string, string>>({});
@@ -75,7 +81,7 @@ export default function AiArchitectPage({
     loadData();
   }, [id]);
 
-  const initializeEditable = (structuredPlan: any) => {
+  const initializeEditable = (structuredPlan: Record<string, unknown> | null) => {
     if (!structuredPlan) return;
     const initial: Record<string, string> = {};
     for (const [key, val] of Object.entries(structuredPlan)) {

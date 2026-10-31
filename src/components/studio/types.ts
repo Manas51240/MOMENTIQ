@@ -65,7 +65,7 @@ export const TONES: readonly AestheticTone[] = [
 export interface CreativeOption {
   title: string;
   styleVariant: string;
-  content: Record<string, any>;
+  content: Record<string, unknown>;
 }
 
 /**
@@ -97,7 +97,7 @@ export interface SavedAsset {
   eventId: string;
   category: CreativeCategory;
   title: string;
-  content: Record<string, any>;
+  content: Record<string, unknown>;
   prompt?: string;
   notes?: string;
   isApproved: boolean;

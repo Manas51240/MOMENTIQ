@@ -9,6 +9,55 @@ import { StatusBadge, StatusVariant } from '@/components/ui/StatusBadge';
 import { Modal } from '@/components/ui/Modal';
 import { Alert } from '@/components/ui/Alert';
 
+interface GuestRecord {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  rsvpStatus: string;
+  dietaryRequirements?: string;
+  plusOnes?: number;
+  attendingCount?: number;
+  tableNumber?: number;
+  tableName?: string;
+  seatingTable?: string;
+  checkedIn: boolean;
+  invitationCode: string;
+  [key: string]: unknown;
+}
+
+interface GuestMetrics {
+  totalGuestRecords?: number;
+  totalInvitedSeats?: number;
+  totalInvited?: number;
+  totalAttendingSeats?: number;
+  totalDeclined?: number;
+  totalPending?: number;
+  totalCheckedIn?: number;
+  responseRatePercent?: number;
+  [key: string]: unknown;
+}
+
+interface GuestsApiResponse {
+  success: boolean;
+  guests: GuestRecord[];
+  metrics: GuestMetrics;
+}
+
+interface GeneratedInviteCopy {
+  headline?: string;
+  salutation?: string;
+  body?: string;
+  callToAction?: string;
+  signOff?: string;
+  formattedInvitationText?: string;
+  whatsappCopy?: string;
+  formalEmailSubject?: string;
+  formalEmailBody?: string;
+  smsBlurb?: string;
+  [key: string]: unknown;
+}
+
 export default function GuestsPage({
   params,
 }: {
@@ -17,7 +66,7 @@ export default function GuestsPage({
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<GuestsApiResponse | null>(null);
   const [alertInfo, setAlertInfo] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Add Guest Modal
@@ -38,9 +87,9 @@ export default function GuestsPage({
 
   // AI Invitation Copy Modal
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [selectedGuest, setSelectedGuest] = useState<any>(null);
+  const [selectedGuest, setSelectedGuest] = useState<GuestRecord | null>(null);
   const [inviteTone, setInviteTone] = useState('CELEBRATORY');
-  const [generatedCopy, setGeneratedCopy] = useState<any>(null);
+  const [generatedCopy, setGeneratedCopy] = useState<GeneratedInviteCopy | null>(null);
   const [generatingCopy, setGeneratingCopy] = useState(false);
 
   const loadGuests = useCallback(async () => {
@@ -141,7 +190,7 @@ export default function GuestsPage({
     }
   };
 
-  const handleCheckInToggle = async (guest: any) => {
+  const handleCheckInToggle = async (guest: GuestRecord) => {
     try {
       const res = await fetch(`/api/events/${id}/guests/${guest.id}/check-in`, {
         method: 'POST',
@@ -193,7 +242,7 @@ export default function GuestsPage({
     );
   }
 
-  const metrics = data?.metrics || {};
+  const metrics: GuestMetrics = data?.metrics || {};
 
   const getRsvpVariant = (status: string): StatusVariant => {
     switch (status) {
@@ -344,7 +393,7 @@ export default function GuestsPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
-                {data?.guests?.map((g: any) => {
+                {data?.guests?.map((g: GuestRecord) => {
                   const rsvpUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/rsvp/${g.invitationCode}`;
 
                   return (
@@ -624,7 +673,7 @@ John Connor,john@example.com,+1-555-0102,1,None`}
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText(generatedCopy.formattedInvitationText);
+                  navigator.clipboard.writeText(String(generatedCopy.formattedInvitationText || ''));
                   setAlertInfo({
                     type: 'success',
                     message: 'Invitation text copied to clipboard!',

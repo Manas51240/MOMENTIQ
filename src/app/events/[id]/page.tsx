@@ -29,6 +29,33 @@ interface EventDetail {
   };
 }
 
+interface BudgetMetrics {
+  totalBudgetMinor: number;
+  totalSpentMinor: number;
+  budgetUtilizationPercent: number;
+  remainingBudgetMinor: number;
+  totalActualPaidMinor?: number;
+  [key: string]: unknown;
+}
+
+interface GuestMetrics {
+  totalAttendingSeats: number;
+  totalDeclined: number;
+  totalPending: number;
+  totalCheckedIn: number;
+  [key: string]: unknown;
+}
+
+interface RiskMetrics {
+  totalRisks: number;
+  overallEventRiskHealth: string;
+  highSeverityCount: number;
+  unresolvedCount: number;
+  highRiskCount?: number;
+  mediumRiskCount?: number;
+  [key: string]: unknown;
+}
+
 export default function EventOverviewPage({
   params,
 }: {
@@ -38,9 +65,9 @@ export default function EventOverviewPage({
   const router = useRouter();
 
   const [event, setEvent] = useState<EventDetail | null>(null);
-  const [budgetMetrics, setBudgetMetrics] = useState<any>(null);
-  const [guestMetrics, setGuestMetrics] = useState<any>(null);
-  const [riskMetrics, setRiskMetrics] = useState<any>(null);
+  const [budgetMetrics, setBudgetMetrics] = useState<BudgetMetrics | null>(null);
+  const [guestMetrics, setGuestMetrics] = useState<GuestMetrics | null>(null);
+  const [riskMetrics, setRiskMetrics] = useState<RiskMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

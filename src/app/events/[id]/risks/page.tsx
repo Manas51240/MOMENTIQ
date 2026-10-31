@@ -10,6 +10,49 @@ import { Modal } from '@/components/ui/Modal';
 import { Alert } from '@/components/ui/Alert';
 import { MANDATORY_RISK_CATEGORIES } from '@/lib/risk/matrix';
 
+interface RiskMitigation {
+  id: string;
+  mitigationPlan: string;
+  contingencyPlan?: string;
+  status: string;
+}
+
+interface RiskRecord {
+  id: string;
+  title: string;
+  description?: string;
+  category: string;
+  probability: number;
+  impact: number;
+  riskScore: number;
+  status: string;
+  notes?: string;
+  ownerName?: string;
+  reviewDate?: string;
+  mitigation?: string;
+  contingency?: string;
+  mitigations?: RiskMitigation[];
+  [key: string]: unknown;
+}
+
+interface RiskMetrics {
+  totalRisks: number;
+  unresolvedCount?: number;
+  highSeverityCount?: number;
+  overallEventRiskHealth: string;
+  highRiskCount?: number;
+  mediumRiskCount?: number;
+  lowRiskCount?: number;
+  averageRiskScore?: number;
+  [key: string]: unknown;
+}
+
+interface RiskPageData {
+  success: boolean;
+  risks: RiskRecord[];
+  metrics: RiskMetrics;
+}
+
 export default function RisksPage({
   params,
 }: {
@@ -18,7 +61,7 @@ export default function RisksPage({
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<RiskPageData | null>(null);
   const [alertInfo, setAlertInfo] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null);
 
   // Category filter
@@ -170,7 +213,7 @@ export default function RisksPage({
     );
   }
 
-  const risks: any[] = data?.risks || [];
+  const risks: RiskRecord[] = data?.risks || [];
   const metrics = data?.metrics || {
     totalRisks: 0,
     highRiskCount: 0,
@@ -299,7 +342,7 @@ export default function RisksPage({
             </div>
           ) : (
             <div className="divide-y divide-stone-200">
-              {filteredRisks.map((r: any) => {
+              {filteredRisks.map((r: RiskRecord) => {
                 const score = r.riskScore;
                 const isHigh = score >= 15;
                 const isMedium = score >= 8 && score < 15;
