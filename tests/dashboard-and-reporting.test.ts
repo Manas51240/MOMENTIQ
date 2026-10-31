@@ -102,8 +102,7 @@ describe('CELEBRA Dashboard & Reporting System Suite', () => {
       categoryId: cateringCat.id,
       title: 'Catering Deposit & Tasting',
       baseAmountMinor: 1000000, // $10,000.00
-      taxBasisPoints: 850, // 8.5%
-      currency: 'USD',
+      taxRateBps: 850, // 8.5%
       notes: 'Initial catering deposit',
     });
 
@@ -122,8 +121,7 @@ describe('CELEBRA Dashboard & Reporting System Suite', () => {
       categoryId: cateringCat.id,
       title: 'Champagne & Specialty Bar',
       baseAmountMinor: 350000, // $3,500.00
-      taxBasisPoints: 850,
-      currency: 'USD',
+      taxRateBps: 850,
       dueDate: pendingDueDate.toISOString(),
       notes: 'Due in 5 days',
     });
