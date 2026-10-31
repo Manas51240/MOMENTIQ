@@ -471,9 +471,10 @@ export default function CollaboratorsPage({
                               <td className="py-3 px-4">
                                 {canManageMembers && isEventOwner ? (
                                   <select
+                                    aria-label={`Update role for ${m.user?.name || 'member'}`}
                                     value={m.role}
                                     onChange={(e) => handleRoleChange(m.userId, e.target.value as EventRole)}
-                                    className="text-xs rounded-md border-stone-300 py-1 px-2 font-medium bg-stone-50 border focus:ring-1 focus:ring-amber-500"
+                                    className="text-xs rounded-md border-stone-300 py-1 px-2 font-medium bg-stone-50 border focus:ring-2 focus:ring-amber-800"
                                   >
                                     <option value="ADMIN">ADMIN</option>
                                     <option value="PLANNER">PLANNER</option>

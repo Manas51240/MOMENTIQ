@@ -328,7 +328,7 @@ export default function BudgetPage({
             <span className="text-xl font-black text-stone-900 block mt-1">
               {formatMoney(metrics.remainingContingencyMinor)}
             </span>
-            <span className="text-[11px] text-emerald-600 font-semibold block mt-0.5">
+            <span className="text-[11px] text-emerald-800 font-semibold block mt-0.5">
               {metrics.utilizationPercentage}% utilized
             </span>
           </div>

@@ -10,6 +10,40 @@ import { Modal } from '@/components/ui/Modal';
 import { Alert } from '@/components/ui/Alert';
 import { MANDATORY_RISK_CATEGORIES } from '@/lib/risk/matrix';
 
+export interface RiskItem {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  probability: number;
+  impact: number;
+  riskScore: number;
+  severityLevel?: string;
+  mitigation?: string;
+  contingency?: string;
+  mitigationPlan?: string;
+  contingencyPlan?: string;
+  ownerName?: string;
+  status: string;
+  reviewDate?: string;
+  createdAt?: string;
+}
+
+export interface RiskMetrics {
+  totalRisks: number;
+  highRiskCount: number;
+  mediumRiskCount: number;
+  lowRiskCount: number;
+  averageRiskScore: number;
+  overallEventRiskHealth: string;
+}
+
+export interface RiskData {
+  risks: RiskItem[];
+  metrics: RiskMetrics;
+  canEdit?: boolean;
+}
+
 export default function RisksPage({
   params,
 }: {
@@ -18,7 +52,7 @@ export default function RisksPage({
   const { id } = use(params);
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<RiskData | null>(null);
   const [alertInfo, setAlertInfo] = useState<{ type: 'success' | 'error' | 'warning' | 'info'; message: string } | null>(null);
 
   // Category filter
@@ -170,7 +204,7 @@ export default function RisksPage({
     );
   }
 
-  const risks: any[] = data?.risks || [];
+  const risks: RiskItem[] = data?.risks || [];
   const metrics = data?.metrics || {
     totalRisks: 0,
     highRiskCount: 0,
@@ -299,7 +333,7 @@ export default function RisksPage({
             </div>
           ) : (
             <div className="divide-y divide-stone-200">
-              {filteredRisks.map((r: any) => {
+              {filteredRisks.map((r: RiskItem) => {
                 const score = r.riskScore;
                 const isHigh = score >= 15;
                 const isMedium = score >= 8 && score < 15;
@@ -338,9 +372,10 @@ export default function RisksPage({
                         </div>
 
                         <select
+                          aria-label={`Update status for risk: ${r.title}`}
                           value={r.status}
                           onChange={(e) => handleStatusChange(r.id, e.target.value)}
-                          className="bg-stone-100 text-stone-800 font-semibold px-2.5 py-1.5 rounded-lg border border-stone-300 text-xs"
+                          className="bg-stone-100 text-stone-800 font-semibold px-2.5 py-1.5 rounded-lg border border-stone-300 text-xs focus:ring-2 focus:ring-amber-800"
                         >
                           <option value="IDENTIFIED">Identified</option>
                           <option value="MITIGATED">Mitigated</option>

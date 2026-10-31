@@ -272,7 +272,7 @@ export default function AiArchitectPage({
               type="button"
               onClick={handleGenerateFullPlan}
               disabled={generating}
-              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 flex items-center gap-2 focus:ring-4 focus:ring-amber-500/40"
+              className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 flex items-center gap-2 focus:ring-4 focus:ring-amber-800/40"
             >
               {generating ? (
                 <>
@@ -367,7 +367,7 @@ export default function AiArchitectPage({
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Section Navigation Sidebar */}
           <div className="lg:col-span-1 bg-white p-4 rounded-2xl border border-stone-300 shadow-sm flex flex-col gap-1.5 h-fit">
-            <span className="text-xs font-bold text-stone-400 uppercase tracking-wider px-3 py-1">
+            <span className="text-xs font-bold text-stone-700 uppercase tracking-wider px-3 py-1">
               Plan Sections
             </span>
             {sections.map((sec) => (
@@ -377,7 +377,7 @@ export default function AiArchitectPage({
                 onClick={() => setActiveSection(sec.key)}
                 className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
                   activeSection === sec.key
-                    ? 'bg-amber-600 text-white shadow-sm'
+                    ? 'bg-amber-800 text-white shadow-sm'
                     : 'text-stone-700 hover:bg-stone-100'
                 }`}
               >

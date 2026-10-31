@@ -356,7 +356,7 @@ export default function CreativeStudioPage({
                       type="checkbox"
                       checked={generateComparison}
                       onChange={(e) => setGenerateComparison(e.target.checked)}
-                      className="h-4 w-4 rounded border-stone-300 text-amber-600 focus:ring-amber-500"
+                      className="h-4 w-4 rounded border-stone-300 text-amber-800 focus:ring-amber-800"
                     />
                     <span className="text-sm text-stone-800 font-medium">
                       Generate 2 comparative options side-by-side
@@ -523,7 +523,7 @@ export default function CreativeStudioPage({
                 <button
                   type="button"
                   onClick={() => setActiveTab('STUDIO')}
-                  className="mt-4 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm rounded-lg"
+                  className="mt-4 px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white font-semibold text-sm rounded-lg"
                 >
                   Go to Generator
                 </button>
@@ -563,7 +563,7 @@ export default function CreativeStudioPage({
                       <button
                         type="button"
                         onClick={() => copyToClipboard(JSON.stringify(asset.content, null, 2), asset.id)}
-                        className="text-xs font-semibold text-amber-600 hover:text-amber-800"
+                        className="text-xs font-semibold text-amber-800 hover:text-amber-900"
                       >
                         {copiedId === asset.id ? '✓ Copied' : 'Copy JSON'}
                       </button>
@@ -632,7 +632,7 @@ export default function CreativeStudioPage({
                   type="button"
                   onClick={handleSaveApprovedAsset}
                   disabled={isSavingAsset}
-                  className="px-5 py-2 text-sm font-bold bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow-sm disabled:opacity-60"
+                  className="px-5 py-2 text-sm font-bold bg-amber-800 hover:bg-amber-900 text-white rounded-lg shadow-sm disabled:opacity-60"
                 >
                   {isSavingAsset ? 'Saving...' : 'Confirm & Save Asset'}
                 </button>
@@ -883,7 +883,7 @@ function CreativeOptionCard({
         <button
           type="button"
           onClick={onSave}
-          className="text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 px-4 py-2 rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-amber-800"
         >
           💾 Save to Event Workspace
         </button>

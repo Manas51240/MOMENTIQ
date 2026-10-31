@@ -23,6 +23,7 @@ const SENSITIVE_PATTERNS = [
   /gemini_api_key[^\s,;]+/gi,
   /password[=:][^\s,;]+/gi,
   /aiza[0-9a-z\-_]{35}/gi,
+  /AQ\.[0-9a-zA-Z_\-\.]{30,}/gi,
 ];
 
 /**

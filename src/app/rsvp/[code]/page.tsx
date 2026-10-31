@@ -4,6 +4,25 @@ import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { Alert } from '@/components/ui/Alert';
 
+export interface PublicInvitation {
+  id: string;
+  guestName: string;
+  currentRsvpStatus: 'PENDING' | 'ATTENDING' | 'DECLINED' | 'MAYBE';
+  attendingCount: number;
+  dietaryRequirements?: string;
+  accessibilityNotes?: string;
+  customWording?: string;
+  event: {
+    id: string;
+    title: string;
+    eventType: string;
+    startDate: string;
+    venue: string;
+    city: string;
+    country: string;
+  };
+}
+
 export default function PublicRsvpPage({
   params,
 }: {
@@ -12,7 +31,7 @@ export default function PublicRsvpPage({
   const { code } = use(params);
 
   const [loading, setLoading] = useState(true);
-  const [invitation, setInvitation] = useState<any>(null);
+  const [invitation, setInvitation] = useState<PublicInvitation | null>(null);
   const [rsvpStatus, setRsvpStatus] = useState<'ATTENDING' | 'DECLINED'>('ATTENDING');
   const [attendingCount, setAttendingCount] = useState(1);
   const [dietaryRequirements, setDietaryRequirements] = useState('');

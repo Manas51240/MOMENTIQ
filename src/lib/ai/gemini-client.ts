@@ -20,7 +20,7 @@ import {
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_MODEL = 'gemini-2.5-flash';
-const REQUEST_TIMEOUT_MS = 25000;
+const REQUEST_TIMEOUT_MS = 45000;
 const MAX_RETRIES = 2;
 
 export interface GeminiExecutionResult<T> {

@@ -155,7 +155,7 @@ export default function DashboardPage() {
                   5. Overdue Tasks
                 </span>
                 <div className={`text-2xl sm:text-3xl font-extrabold ${
-                  telemetry.overdueTasks.count > 0 ? 'text-rose-600' : 'text-stone-900'
+                  telemetry.overdueTasks.count > 0 ? 'text-rose-800' : 'text-stone-900'
                 }`}>
                   {telemetry.overdueTasks.count}
                 </div>
@@ -305,7 +305,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-stone-50">
                     <span className="text-stone-600">Declined</span>
-                    <span className="font-bold text-rose-600">{telemetry.guestRsvpSummary.declined}</span>
+                    <span className="font-bold text-rose-800">{telemetry.guestRsvpSummary.declined}</span>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-stone-50">
                     <span className="text-stone-600">Pending Response</span>
@@ -359,7 +359,7 @@ export default function DashboardPage() {
                     <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
                     <h3 className="text-sm font-bold text-stone-900">5. Overdue Tasks Requiring Action</h3>
                   </div>
-                  <span className="text-xs font-extrabold text-rose-600">
+                  <span className="text-xs font-extrabold text-rose-800">
                     {telemetry.overdueTasks.count} Overdue
                   </span>
                 </div>

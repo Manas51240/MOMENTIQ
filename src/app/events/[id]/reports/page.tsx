@@ -180,7 +180,7 @@ export default function EventReportsPage({
             {/* Report Header Card */}
             <div className="border-b border-stone-200 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <span className="text-xs font-extrabold uppercase text-amber-600 tracking-wider">
+                <span className="text-xs font-extrabold uppercase text-amber-800 tracking-wider">
                   Live Report Preview
                 </span>
                 <h2 className="text-xl sm:text-2xl font-bold text-stone-900 mt-1">
@@ -209,19 +209,19 @@ export default function EventReportsPage({
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Total Spent</span>
-                    <span className="text-lg font-bold text-rose-600">
+                    <span className="text-lg font-bold text-rose-800">
                       {formatMinor(reportData.summary?.totalSpentMinor, reportData.event?.currency)}
                     </span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Remaining</span>
-                    <span className="text-lg font-bold text-emerald-600">
+                    <span className="text-lg font-bold text-emerald-800">
                       {formatMinor(reportData.summary?.remainingBudgetMinor, reportData.event?.currency)}
                     </span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Utilization</span>
-                    <span className="text-lg font-bold text-amber-600">
+                    <span className="text-lg font-bold text-amber-800">
                       {reportData.summary?.utilizationPercent}%
                     </span>
                   </div>
@@ -247,7 +247,7 @@ export default function EventReportsPage({
                             <td className="px-4 py-3 font-semibold text-stone-900">{c.name}</td>
                             <td className="px-4 py-3 text-right">{formatMinor(c.allocatedMinor, reportData.event?.currency)}</td>
                             <td className="px-4 py-3 text-right">{formatMinor(c.spentMinor, reportData.event?.currency)}</td>
-                            <td className="px-4 py-3 text-right font-semibold text-emerald-600">{formatMinor(c.varianceMinor, reportData.event?.currency)}</td>
+                            <td className="px-4 py-3 text-right font-semibold text-emerald-800">{formatMinor(c.varianceMinor, reportData.event?.currency)}</td>
                             <td className="px-4 py-3 text-right">{c.utilizationPercent}%</td>
                           </tr>
                         ))}
@@ -303,15 +303,15 @@ export default function EventReportsPage({
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Attending Heads</span>
-                    <span className="text-lg font-bold text-emerald-600">{reportData.summary?.attendingHeads}</span>
+                    <span className="text-lg font-bold text-emerald-800">{reportData.summary?.attendingHeads}</span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Declined</span>
-                    <span className="text-lg font-bold text-rose-600">{reportData.summary?.declinedCount}</span>
+                    <span className="text-lg font-bold text-rose-800">{reportData.summary?.declinedCount}</span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Checked In</span>
-                    <span className="text-lg font-bold text-amber-600">{reportData.summary?.checkedInCount}</span>
+                    <span className="text-lg font-bold text-amber-800">{reportData.summary?.checkedInCount}</span>
                   </div>
                 </div>
 
@@ -401,11 +401,11 @@ export default function EventReportsPage({
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Unresolved</span>
-                    <span className="text-lg font-bold text-amber-600">{reportData.summary?.unresolvedCount}</span>
+                    <span className="text-lg font-bold text-amber-800">{reportData.summary?.unresolvedCount}</span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">High Hazard</span>
-                    <span className="text-lg font-bold text-rose-600">{reportData.summary?.highHazardCount}</span>
+                    <span className="text-lg font-bold text-rose-800">{reportData.summary?.highHazardCount}</span>
                   </div>
                 </div>
 
@@ -452,15 +452,15 @@ export default function EventReportsPage({
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Completed</span>
-                    <span className="text-lg font-bold text-emerald-600">{reportData.summary?.completedTasks}</span>
+                    <span className="text-lg font-bold text-emerald-800">{reportData.summary?.completedTasks}</span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Overdue</span>
-                    <span className="text-lg font-bold text-rose-600">{reportData.summary?.overdueTasks}</span>
+                    <span className="text-lg font-bold text-rose-800">{reportData.summary?.overdueTasks}</span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Completion %</span>
-                    <span className="text-lg font-bold text-amber-600">{reportData.summary?.completionPercent}%</span>
+                    <span className="text-lg font-bold text-amber-800">{reportData.summary?.completionPercent}%</span>
                   </div>
                 </div>
 
@@ -509,19 +509,19 @@ export default function EventReportsPage({
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Refunds</span>
-                    <span className="text-lg font-bold text-rose-600">
+                    <span className="text-lg font-bold text-rose-800">
                       {formatMinor(reportData.summary?.totalRefundedMinor, reportData.event?.currency)}
                     </span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Net Paid</span>
-                    <span className="text-lg font-bold text-emerald-600">
+                    <span className="text-lg font-bold text-emerald-800">
                       {formatMinor(reportData.summary?.netDisbursedMinor, reportData.event?.currency)}
                     </span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Pending Due</span>
-                    <span className="text-lg font-bold text-amber-600">
+                    <span className="text-lg font-bold text-amber-800">
                       {formatMinor(reportData.summary?.pendingDueMinor, reportData.event?.currency)}
                     </span>
                   </div>
@@ -608,13 +608,13 @@ export default function EventReportsPage({
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Actual Heads</span>
-                    <span className="text-lg font-bold text-emerald-600">
+                    <span className="text-lg font-bold text-emerald-800">
                       {reportData.operationalSummary?.actualAttendingHeads} / {reportData.operationalSummary?.targetGuests}
                     </span>
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">Door Check-In</span>
-                    <span className="text-lg font-bold text-amber-600">
+                    <span className="text-lg font-bold text-amber-800">
                       {reportData.operationalSummary?.actualCheckedInHeads}
                     </span>
                   </div>
@@ -626,7 +626,7 @@ export default function EventReportsPage({
                   </div>
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                     <span className="text-xs font-semibold text-stone-500 block">All Risks Handled</span>
-                    <span className="text-lg font-bold text-emerald-600">
+                    <span className="text-lg font-bold text-emerald-800">
                       {reportData.operationalSummary?.allRisksResolved ? 'PASSED' : 'PENDING'}
                     </span>
                   </div>

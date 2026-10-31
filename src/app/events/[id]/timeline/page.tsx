@@ -18,7 +18,7 @@ interface TaskItem {
   dueDate: string;
   isMilestone: boolean;
   isUserLocked: boolean;
-  dependencies?: any[];
+  dependencies?: { id: string; dependsOnTaskId: string }[];
 }
 
 export default function TimelinePage({
@@ -318,9 +318,10 @@ export default function TimelinePage({
 
                           {/* Quick Status Shift Select */}
                           <select
+                            aria-label={`Update status for ${t.title}`}
                             value={t.status}
                             onChange={(e) => handleStatusChange(t.id, e.target.value as TaskItem['status'])}
-                            className="bg-stone-50 text-stone-700 font-semibold px-2 py-0.5 rounded border border-stone-200 focus:outline-none"
+                            className="bg-stone-50 text-stone-700 font-semibold px-2 py-0.5 rounded border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-800"
                           >
                             <option value="TODO">To Do</option>
                             <option value="IN_PROGRESS">In Progress</option>
@@ -360,9 +361,10 @@ export default function TimelinePage({
                     <span className="text-stone-500">{new Date(t.dueDate).toLocaleDateString()}</span>
                     <StatusBadge label={t.priority} variant={getPriorityVariant(t.priority)} />
                     <select
+                      aria-label={`Update status for ${t.title}`}
                       value={t.status}
                       onChange={(e) => handleStatusChange(t.id, e.target.value as TaskItem['status'])}
-                      className="bg-stone-100 text-stone-800 font-semibold px-2 py-1 rounded border border-stone-300 text-xs"
+                      className="bg-stone-100 text-stone-800 font-semibold px-2 py-1 rounded border border-stone-300 text-xs focus:ring-2 focus:ring-amber-800"
                     >
                       <option value="TODO">To Do</option>
                       <option value="IN_PROGRESS">In Progress</option>
