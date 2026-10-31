@@ -122,142 +122,152 @@ export class AiEventArchitectService {
     await authorizeEventAccess(userId, eventId, 'EVENT_EDIT');
     const plan = eventArchitectPlanSchema.parse(approvedPlan);
 
-    await db.$transaction(async (tx) => {
-      // 1. Update Preferences with approved theme and palette
-      await tx.eventPreference.upsert({
-        where: { eventId },
-        update: {
-          theme: plan.recommendedTheme.name,
-          colorPaletteJson: JSON.stringify(plan.recommendedTheme.colorPalette),
-          tone: plan.recommendedTheme.description.slice(0, 100),
-          dietaryNotes: plan.guestManagementPlan.dietaryTrackingStrategy,
-          notes: plan.executiveConcept.overview,
-        },
-        create: {
-          eventId,
-          theme: plan.recommendedTheme.name,
-          colorPaletteJson: JSON.stringify(plan.recommendedTheme.colorPalette),
-          tone: plan.recommendedTheme.description.slice(0, 100),
-          dietaryNotes: plan.guestManagementPlan.dietaryTrackingStrategy,
-          notes: plan.executiveConcept.overview,
-        },
-      });
-
-      // 2. Update Event Budget
-      await tx.eventBudget.upsert({
-        where: { eventId },
-        update: {
-          totalBudgetMinor: BigInt(plan.budgetAllocation.totalBudgetMinor),
-          currency: plan.budgetAllocation.currency,
-          contingencyPercent: plan.budgetAllocation.contingencyPercentage,
-          notes: plan.importantAssumptions.disclaimers.join(' | '),
-        },
-        create: {
-          eventId,
-          totalBudgetMinor: BigInt(plan.budgetAllocation.totalBudgetMinor),
-          currency: plan.budgetAllocation.currency,
-          contingencyPercent: plan.budgetAllocation.contingencyPercentage,
-          notes: plan.importantAssumptions.disclaimers.join(' | '),
-        },
-      });
-
-      // 3. Sync Budget Categories
-      for (const cat of plan.budgetAllocation.categories) {
-        const existing = await tx.budgetCategory.findFirst({
-          where: { eventId, name: cat.name },
+    await db.$transaction(
+      async (tx) => {
+        // 1. Update Preferences with approved theme and palette
+        await tx.eventPreference.upsert({
+          where: { eventId },
+          update: {
+            theme: plan.recommendedTheme.name,
+            colorPaletteJson: JSON.stringify(plan.recommendedTheme.colorPalette),
+            tone: plan.recommendedTheme.description.slice(0, 100),
+            dietaryNotes: plan.guestManagementPlan.dietaryTrackingStrategy,
+            notes: plan.executiveConcept.overview,
+          },
+          create: {
+            eventId,
+            theme: plan.recommendedTheme.name,
+            colorPaletteJson: JSON.stringify(plan.recommendedTheme.colorPalette),
+            tone: plan.recommendedTheme.description.slice(0, 100),
+            dietaryNotes: plan.guestManagementPlan.dietaryTrackingStrategy,
+            notes: plan.executiveConcept.overview,
+          },
         });
 
-        if (existing) {
-          await tx.budgetCategory.update({
-            where: { id: existing.id },
-            data: { allocatedMinor: BigInt(cat.allocatedMinor) },
-          });
-        } else {
-          await tx.budgetCategory.create({
-            data: {
+        // 2. Update Event Budget
+        await tx.eventBudget.upsert({
+          where: { eventId },
+          update: {
+            totalBudgetMinor: BigInt(plan.budgetAllocation.totalBudgetMinor),
+            currency: plan.budgetAllocation.currency,
+            contingencyPercent: plan.budgetAllocation.contingencyPercentage,
+            notes: plan.importantAssumptions.disclaimers.join(' | '),
+          },
+          create: {
+            eventId,
+            totalBudgetMinor: BigInt(plan.budgetAllocation.totalBudgetMinor),
+            currency: plan.budgetAllocation.currency,
+            contingencyPercent: plan.budgetAllocation.contingencyPercentage,
+            notes: plan.importantAssumptions.disclaimers.join(' | '),
+          },
+        });
+
+        // 3. Sync Budget Categories (Bulk optimized to minimize round-trips)
+        const existingCats = await tx.budgetCategory.findMany({ where: { eventId } });
+        const catMap = new Map(existingCats.map((c) => [c.name, c]));
+        const newCatsToCreate: Array<{
+          eventId: string;
+          name: string;
+          allocatedMinor: bigint;
+          spentMinor: bigint;
+        }> = [];
+
+        for (const cat of plan.budgetAllocation.categories) {
+          const existing = catMap.get(cat.name);
+          if (existing) {
+            await tx.budgetCategory.update({
+              where: { id: existing.id },
+              data: { allocatedMinor: BigInt(cat.allocatedMinor) },
+            });
+          } else {
+            newCatsToCreate.push({
               eventId,
               name: cat.name,
               allocatedMinor: BigInt(cat.allocatedMinor),
               spentMinor: BigInt(0),
-            },
-          });
+            });
+          }
         }
-      }
 
-      // 4. Populate Milestones & Key Tasks
-      for (let i = 0; i < plan.planningMilestones.milestones.length; i++) {
-        const m = plan.planningMilestones.milestones[i];
-        const targetDate = new Date(Date.now() + (m.targetDateOffsetWeeks + 12) * 7 * 86400000);
+        if (newCatsToCreate.length > 0) {
+          await tx.budgetCategory.createMany({ data: newCatsToCreate });
+        }
 
-        const milestone = await tx.milestone.create({
-          data: {
-            eventId,
-            title: m.phase,
-            targetDate,
-            orderIndex: i,
-          },
-        });
+        // 4. Populate Milestones & Key Tasks in bulk
+        for (let i = 0; i < plan.planningMilestones.milestones.length; i++) {
+          const m = plan.planningMilestones.milestones[i];
+          const targetDate = new Date(Date.now() + (m.targetDateOffsetWeeks + 12) * 7 * 86400000);
 
-        for (const deliverable of m.deliverables) {
-          await tx.task.create({
+          const milestone = await tx.milestone.create({
             data: {
               eventId,
-              milestoneId: milestone.id,
-              title: deliverable,
-              category: 'Planning',
-              dueDate: targetDate,
-              priority: m.criticalPath ? 'HIGH' : 'MEDIUM',
-              status: 'TODO',
+              title: m.phase,
+              targetDate,
+              orderIndex: i,
+            },
+          });
+
+          if (m.deliverables && m.deliverables.length > 0) {
+            await tx.task.createMany({
+              data: m.deliverables.map((deliverable) => ({
+                eventId,
+                milestoneId: milestone.id,
+                title: deliverable,
+                category: 'Planning',
+                dueDate: targetDate,
+                priority: m.criticalPath ? 'HIGH' : 'MEDIUM',
+                status: 'TODO',
+              })),
+            });
+          }
+        }
+
+        // 5. Populate Event-Day Schedule in bulk
+        if (plan.eventDaySchedule.timeline && plan.eventDaySchedule.timeline.length > 0) {
+          await tx.eventSchedule.createMany({
+            data: plan.eventDaySchedule.timeline.map((item, i) => ({
+              eventId,
+              startTime: item.timeOffset,
+              endTime: item.timeOffset,
+              title: item.activity,
+              location: item.location,
+              speakerOrHost: item.leadPerson,
+              notes: item.timeLabel,
+              orderIndex: i,
+            })),
+          });
+        }
+
+        // 6. Populate Risk Register
+        for (const scenario of plan.contingencyPlan.scenarios) {
+          const probScore = scenario.probability === 'HIGH' ? 4 : scenario.probability === 'MEDIUM' ? 3 : 1;
+          const impactScore = scenario.impact === 'HIGH' ? 4 : scenario.impact === 'MEDIUM' ? 3 : 1;
+
+          const risk = await tx.riskItem.create({
+            data: {
+              eventId,
+              title: scenario.riskDescription,
+              category: 'Contingency',
+              probability: probScore,
+              impact: impactScore,
+              riskScore: probScore * impactScore,
+              notes: scenario.preventiveMeasure,
+              status: 'IDENTIFIED',
+            },
+          });
+
+          await tx.riskMitigation.create({
+            data: {
+              riskId: risk.id,
+              mitigationPlan: scenario.preventiveMeasure,
+              contingencyPlan: scenario.fallbackPlan,
+              status: 'PLANNED',
             },
           });
         }
-      }
-
-      // 5. Populate Event-Day Schedule
-      for (let i = 0; i < plan.eventDaySchedule.timeline.length; i++) {
-        const item = plan.eventDaySchedule.timeline[i];
-        await tx.eventSchedule.create({
-          data: {
-            eventId,
-            startTime: item.timeOffset,
-            endTime: item.timeOffset,
-            title: item.activity,
-            location: item.location,
-            speakerOrHost: item.leadPerson,
-            notes: item.timeLabel,
-            orderIndex: i,
-          },
-        });
-      }
-
-      // 6. Populate Risk Register
-      for (const scenario of plan.contingencyPlan.scenarios) {
-        const probScore = scenario.probability === 'HIGH' ? 4 : scenario.probability === 'MEDIUM' ? 3 : 1;
-        const impactScore = scenario.impact === 'HIGH' ? 4 : scenario.impact === 'MEDIUM' ? 3 : 1;
-
-        const risk = await tx.riskItem.create({
-          data: {
-            eventId,
-            title: scenario.riskDescription,
-            category: 'Contingency',
-            probability: probScore,
-            impact: impactScore,
-            riskScore: probScore * impactScore,
-            notes: scenario.preventiveMeasure,
-            status: 'IDENTIFIED',
-          },
-        });
-
-        await tx.riskMitigation.create({
-          data: {
-            riskId: risk.id,
-            mitigationPlan: scenario.preventiveMeasure,
-            contingencyPlan: scenario.fallbackPlan,
-            status: 'PLANNED',
-          },
-        });
-      }
-    });
+      },
+      { maxWait: 15000, timeout: 30000 }
+    );
 
     await logActivity({
       eventId,

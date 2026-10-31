@@ -1,11 +1,11 @@
-# CELEBRA — Security Architecture & Threat Model
+# MOMENTIQ — Security Architecture & Threat Model
 ### OWASP ASVS Level 2 Verification & Cryptographic Standards
 
 ---
 
 ## 1. Security Overview & Compliance Target
 
-CELEBRA implements a defense-in-depth security model targeting **100/100 defensible compliance** with the **OWASP Application Security Verification Standard (ASVS) Level 2**.
+MOMENTIQ implements a defense-in-depth security model targeting **100/100 defensible compliance** with the **OWASP Application Security Verification Standard (ASVS) Level 2**.
 
 Key security guarantees:
 - **No Insecure Direct Object References (IDOR)**: Validated on every single protected API call.
@@ -19,7 +19,7 @@ Key security guarantees:
 ## 2. Authentication & Cryptographic Engineering
 
 ### A. Password Storage (RFC 7914 Scrypt)
-Passwords are never stored in plaintext. CELEBRA uses the memory-hard **Scrypt** key derivation function via Node.js native `crypto.scrypt`:
+Passwords are never stored in plaintext. MOMENTIQ uses the memory-hard **Scrypt** key derivation function via Node.js native `crypto.scrypt`:
 - **Parameters**:
   - CPU/Memory Cost ($N$): $16384$
   - Block Size ($r$): $8$

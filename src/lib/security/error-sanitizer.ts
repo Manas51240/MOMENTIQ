@@ -37,6 +37,44 @@ export function sanitizeSensitiveString(input: string): string {
   return sanitized;
 }
 
+const REDACTED_KEYS = new Set([
+  'password',
+  'token',
+  'secret',
+  'session',
+  'cookie',
+  'key',
+  'apikey',
+  'gemini_api_key',
+  'session_secret',
+  'authorization',
+  'database_url',
+]);
+
+/**
+ * Recursively redacts sensitive keys and values from strings, objects, or arrays.
+ */
+export function maskSensitiveData<T>(input: T): T {
+  if (typeof input === 'string') {
+    return sanitizeSensitiveString(input) as unknown as T;
+  }
+  if (input === null || typeof input !== 'object') {
+    return input;
+  }
+  if (Array.isArray(input)) {
+    return input.map((item) => maskSensitiveData(item)) as unknown as T;
+  }
+  const maskedObj: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+    if (REDACTED_KEYS.has(key.toLowerCase())) {
+      maskedObj[key] = '[REDACTED]';
+    } else {
+      maskedObj[key] = maskSensitiveData(value);
+    }
+  }
+  return maskedObj as T;
+}
+
 /**
  * Formats a clean, safe JSON error payload for client consumption.
  */

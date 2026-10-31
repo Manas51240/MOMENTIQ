@@ -1,23 +1,23 @@
-# CELEBRA — System Architecture & Design Specification
+# MOMENTIQ — System Architecture & Design Specification
 ### II2S Challenge 5: Celebration & Event Planner
 
 ---
 
 ## 1. Architectural Philosophy & Principles
 
-CELEBRA is designed as an enterprise-grade SaaS platform built on the following foundational axioms:
+MOMENTIQ is designed as an enterprise-grade SaaS platform built on the following foundational axioms:
 
 1. **Deterministic Authority**:
    Generative AI is treated strictly as an **advisory and creative layer**. It suggests concepts, themes, schedules, and decor recommendations, but is **never permitted to execute direct database mutations or calculate financial numbers**. All financial arithmetic, calendar dependencies, and relational bindings are computed by deterministic backend engines.
 
 2. **Zero Floating-Point Drift**:
-   Financial calculations in celebrations often aggregate hundreds of itemized expenses, vendor quotes, and partial milestone payments. Using binary floating-point numbers (`IEEE 754`) introduces cumulative rounding errors. CELEBRA mandates 64-bit integer minor currency units (`BigInt` / cents) and integer basis points for taxation (`1 bp = 0.01%`).
+   Financial calculations in celebrations often aggregate hundreds of itemized expenses, vendor quotes, and partial milestone payments. Using binary floating-point numbers (`IEEE 754`) introduces cumulative rounding errors. MOMENTIQ mandates 64-bit integer minor currency units (`BigInt` / paise / cents) and integer basis points for taxation (`1 bp = 0.01%`).
 
 3. **Multi-Tenant Zero Trust & IDOR Defense**:
    All user input is treated as untrusted. Client-provided user IDs, event IDs, or role claims are never trusted directly. Every request is verified through cryptographically signed sessions and evaluated against server-side authorization middleware (`authorizeEventAccess`) before touching domain logic.
 
 4. **Fault-Tolerant Dual AI Architecture**:
-   External AI service availability, rate limits, or network latency must never bring down core planning operations. CELEBRA features a dual execution engine: primary requests are processed via Google Gemini 2.5 Flash with bounded timeouts and exponential backoff, falling back automatically to a 100% offline deterministic generative engine.
+   External AI service availability, rate limits, or network latency must never bring down core planning operations. MOMENTIQ features a dual execution engine: primary requests are processed via Google Gemini 2.5 Flash with bounded timeouts and exponential backoff, falling back automatically to a 100% offline deterministic generative engine.
 
 ---
 
@@ -159,7 +159,7 @@ graph TD
 
 ## 4. Cryptographic Security & Threat Model
 
-| Threat | Attack Vector | CELEBRA Defensive Mitigation |
+| Threat | Attack Vector | MOMENTIQ Defensive Mitigation |
 |---|---|---|
 | **Brute Force & Credential Stuffing** | Rapid automated password guessing | Sliding-window rate limiting (10 attempts/min) + Scrypt key derivation (RFC 7914) with $N=16384, r=8, p=1$. |
 | **Timing Side-Channel Attacks** | Measuring password hash comparison durations | Byte-by-byte constant-time comparison via `crypto.timingSafeEqual`. |
