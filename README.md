@@ -1,7 +1,8 @@
 # MOMENTIQ — Intelligent Event Planning & Celebration Platform
 ### II2S Challenge 5: Event Planning & Celebration System
-**Live Production URL:** Deploying to Vercel  
+**Live Production URL:** [https://momentiq-five.vercel.app](https://momentiq-five.vercel.app)  
 **Demo Credentials:** `demo@momentiq.com` / `Password123!`  
+**GitHub Repository:** [https://github.com/Manas51240/MOMENTIQ](https://github.com/Manas51240/MOMENTIQ)  
 **Defensible Target Score:** 100/100 across Code Quality, Security, Efficiency, Testing, Accessibility, and Problem Alignment.
 
 ---
