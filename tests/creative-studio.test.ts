@@ -117,14 +117,17 @@ describe('AI Creative Studio & Personalized Event Creativity Suite', () => {
       generateComparison: true,
     });
 
+    const contentA = result.optionA.content as any;
+    const contentB = result.optionB?.content as any;
+
     expect(result.category).toBe('COLOR_PALETTE');
     expect(result.optionA).toBeDefined();
     expect(result.optionA.title).toContain('COLOR PALETTE');
-    expect(result.optionA.content.colors.length).toBeGreaterThanOrEqual(3);
+    expect(contentA.colors.length).toBeGreaterThanOrEqual(3);
 
     expect(result.optionB).toBeDefined();
     expect(result.optionB?.styleVariant).toContain('Bold Direction');
-    expect(result.optionB?.content.paletteName).not.toEqual(result.optionA.content.paletteName);
+    expect(contentB.paletteName).not.toEqual(contentA.paletteName);
   });
 
   it('5. Enforces Truth-in-Generation policy for visual moodboards without fabricating vendor photos', async () => {
@@ -133,7 +136,7 @@ describe('AI Creative Studio & Personalized Event Creativity Suite', () => {
       tone: 'ELEGANT',
     });
 
-    const content = moodboardResult.optionA.content;
+    const content = moodboardResult.optionA.content as any;
     expect(content.truthInGenerationDisclaimer).toBe(
       'AI Generated Concept Moodboard — Not vendor portfolio photograph'
     );
@@ -170,7 +173,7 @@ describe('AI Creative Studio & Personalized Event Creativity Suite', () => {
     expect(saved.title).toBe('Official Grand Gala Color Palette');
     expect(saved.isApproved).toBe(true);
     expect(saved.version).toBe(1);
-    expect(saved.content.paletteName).toBe('Sapphire & Champagne Rose');
+    expect((saved.content as any).paletteName).toBe('Sapphire & Champagne Rose');
 
     // Verify in database
     const inDb = await db.creativeAsset.findUnique({ where: { id: saved.id } });

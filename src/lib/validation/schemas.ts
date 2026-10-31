@@ -108,11 +108,25 @@ export const eventRoleEnum = z.enum(['OWNER', 'PLANNER', 'COLLABORATOR', 'VIEWER
 
 export const addCollaboratorSchema = z.object({
   email: z.string().trim().email('Valid email address is required').toLowerCase(),
-  role: z.enum(['PLANNER', 'COLLABORATOR', 'VIEWER']),
+  role: z.enum([
+    'ADMIN',
+    'PLANNER',
+    'FINANCE_MANAGER',
+    'GUEST_COORDINATOR',
+    'VIEWER',
+    'COLLABORATOR',
+  ]),
 });
 
 export const updateCollaboratorSchema = z.object({
-  role: z.enum(['PLANNER', 'COLLABORATOR', 'VIEWER']),
+  role: z.enum([
+    'ADMIN',
+    'PLANNER',
+    'FINANCE_MANAGER',
+    'GUEST_COORDINATOR',
+    'VIEWER',
+    'COLLABORATOR',
+  ]),
 });
 
 // ==============================================================================

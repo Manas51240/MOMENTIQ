@@ -155,8 +155,8 @@ export async function authorizeEventAccess(
     eventId,
     role,
     isOwner,
-    canEdit: role === 'OWNER' || role === 'PLANNER',
-    canManageMembers: role === 'OWNER',
+    canEdit: role === 'OWNER' || role === 'ADMIN' || role === 'PLANNER',
+    canManageMembers: role === 'OWNER' || role === 'ADMIN',
   };
 }
 

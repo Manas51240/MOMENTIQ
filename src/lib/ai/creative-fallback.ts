@@ -666,3 +666,4 @@ More precious than the words our hearts can speak.`,
       throw new Error(`Unsupported creative category: ${category}`);
   }
 }
+

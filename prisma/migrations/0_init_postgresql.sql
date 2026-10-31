@@ -399,4 +399,22 @@ CREATE INDEX "CreativeAsset_eventId_idx" ON "CreativeAsset"("eventId");
 CREATE INDEX "CreativeAsset_category_idx" ON "CreativeAsset"("category");
 CREATE INDEX "CreativeAsset_isApproved_idx" ON "CreativeAsset"("isApproved");
 
+CREATE TABLE "CollaboratorInvitation" (
+    "id" TEXT PRIMARY KEY,
+    "eventId" TEXT NOT NULL REFERENCES "Event"("id") ON DELETE CASCADE,
+    "email" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "token" TEXT UNIQUE NOT NULL,
+    "invitedBy" TEXT NOT NULL,
+    "status" TEXT DEFAULT 'PENDING' NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+CREATE INDEX "CollaboratorInvitation_eventId_idx" ON "CollaboratorInvitation"("eventId");
+CREATE INDEX "CollaboratorInvitation_email_idx" ON "CollaboratorInvitation"("email");
+CREATE INDEX "CollaboratorInvitation_token_idx" ON "CollaboratorInvitation"("token");
+CREATE INDEX "CollaboratorInvitation_status_idx" ON "CollaboratorInvitation"("status");
+
+
 

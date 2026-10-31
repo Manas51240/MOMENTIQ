@@ -4,7 +4,14 @@
 
 export type SystemUserRole = 'USER' | 'ADMIN';
 
-export type EventRole = 'OWNER' | 'PLANNER' | 'COLLABORATOR' | 'VIEWER';
+export type EventRole =
+  | 'OWNER'
+  | 'ADMIN'
+  | 'PLANNER'
+  | 'FINANCE_MANAGER'
+  | 'GUEST_COORDINATOR'
+  | 'VIEWER'
+  | 'COLLABORATOR';
 
 export type EventType =
   | 'WEDDING'

@@ -84,6 +84,7 @@ model Event {
   aiGenerations AiGeneration[]
   notifications Notification[]
   creativeAssets CreativeAsset[]
+  invitations  CollaboratorInvitation[]
 
   @@index([ownerId])
   @@index([status])
@@ -406,22 +407,32 @@ model EventSchedule {
 }
 
 model RiskItem {
-  id          String           @id @default(uuid())
-  eventId     String
-  title       String
-  category    String           @default("Operational")
-  probability Int              @default(1) // 1 to 5
-  impact      Int              @default(1) // 1 to 5
-  riskScore   Int              @default(1) // 1 to 25
-  status      String           @default("IDENTIFIED") // IDENTIFIED, MITIGATED, ACCEPTED, CLOSED
-  notes       String?
-  createdAt   DateTime         @default(now())
+  id              String           @id @default(uuid())
+  eventId         String
+  title           String
+  description     String           @default("")
+  category        String           @default("Operational")
+  probability     Int              @default(1) // 1 to 5
+  impact          Int              @default(1) // 1 to 5
+  riskScore       Int              @default(1) // 1 to 25
+  severity        String           @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  mitigation      String           @default("")
+  contingency     String           @default("")
+  ownerName       String?
+  ownerId         String?
+  status          String           @default("IDENTIFIED") // IDENTIFIED, MITIGATED, ACCEPTED, CLOSED
+  reviewDate      DateTime?
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
 
-  event       Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  mitigations RiskMitigation[]
+  event           Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  mitigations     RiskMitigation[]
 
   @@index([eventId])
+  @@index([category])
   @@index([riskScore])
+  @@index([status])
 }
 
 model RiskMitigation {
@@ -539,4 +550,25 @@ model CreativeAsset {
   @@index([category])
   @@index([isApproved])
 }
+
+model CollaboratorInvitation {
+  id         String   @id @default(uuid())
+  eventId    String
+  email      String
+  role       String   // ADMIN, PLANNER, FINANCE_MANAGER, GUEST_COORDINATOR, VIEWER, COLLABORATOR
+  token      String   @unique
+  invitedBy  String
+  status     String   @default("PENDING") // PENDING, ACCEPTED, REVOKED, EXPIRED
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([email])
+  @@index([token])
+  @@index([status])
+}
+
 

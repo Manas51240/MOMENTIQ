@@ -70,12 +70,12 @@ describe('Risk Register, 5x5 RAG Matrix & Contingency Planning Suite', () => {
 
   it('2. Tailors default baseline risks to venue type (outdoor weather contingency)', () => {
     const outdoorRisks = getDefaultRisksForEvent('WEDDING', 'Rose Garden Lawn');
-    const weatherRisk = outdoorRisks.find((r) => r.category === 'Weather & Climate');
+    const weatherRisk = outdoorRisks.find((r) => r.category === 'Weather' || (r.category as string) === 'Weather & Climate');
     expect(weatherRisk).toBeDefined();
     expect(weatherRisk?.contingencyPlan).toContain('backup hall');
 
     const indoorRisks = getDefaultRisksForEvent('WEDDING', 'Grand Crystal Ballroom');
-    const indoorWeather = indoorRisks.find((r) => r.category === 'Weather & Climate');
+    const indoorWeather = indoorRisks.find((r) => r.category === 'Weather' || (r.category as string) === 'Weather & Climate');
     expect(indoorWeather).toBeUndefined();
     const hvac = indoorRisks.find((r) => r.title.includes('HVAC'));
     expect(hvac).toBeDefined();

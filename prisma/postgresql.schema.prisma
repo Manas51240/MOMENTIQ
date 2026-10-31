@@ -160,6 +160,7 @@ model Event {
   aiGenerations AiGeneration[]
   notifications Notification[]
   creativeAssets CreativeAsset[]
+  invitations  CollaboratorInvitation[]
 
   @@index([ownerId])
   @@index([status])
@@ -480,22 +481,32 @@ model EventSchedule {
 }
 
 model RiskItem {
-  id          String           @id @default(uuid())
-  eventId     String
-  title       String
-  category    String           @default("Operational")
-  probability Int              @default(1)
-  impact      Int              @default(1)
-  riskScore   Int              @default(1)
-  status      String           @default("IDENTIFIED")
-  notes       String?
-  createdAt   DateTime         @default(now())
+  id              String           @id @default(uuid())
+  eventId         String
+  title           String
+  description     String           @default("")
+  category        String           @default("Operational")
+  probability     Int              @default(1)
+  impact          Int              @default(1)
+  riskScore       Int              @default(1)
+  severity        String           @default("LOW")
+  mitigation      String           @default("")
+  contingency     String           @default("")
+  ownerName       String?
+  ownerId         String?
+  status          String           @default("IDENTIFIED")
+  reviewDate      DateTime?
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
 
-  event       Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  mitigations RiskMitigation[]
+  event           Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  mitigations     RiskMitigation[]
 
   @@index([eventId])
+  @@index([category])
   @@index([riskScore])
+  @@index([status])
 }
 
 model RiskMitigation {
@@ -613,4 +624,25 @@ model CreativeAsset {
   @@index([category])
   @@index([isApproved])
 }
+
+model CollaboratorInvitation {
+  id         String   @id @default(uuid())
+  eventId    String
+  email      String
+  role       String
+  token      String   @unique
+  invitedBy  String
+  status     String   @default("PENDING")
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([email])
+  @@index([token])
+  @@index([status])
+}
+
 

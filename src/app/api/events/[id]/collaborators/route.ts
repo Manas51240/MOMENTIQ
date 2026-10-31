@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateRequest } from '@/lib/security/auth-middleware';
-import { EventService } from '@/services/event-service';
+import { CollaborationService } from '@/services/collaboration-service';
 import { formatSafeErrorResponse } from '@/lib/security/error-sanitizer';
 
 export async function GET(
@@ -11,10 +11,10 @@ export async function GET(
     const auth = await authenticateRequest(req);
     const { id } = await params;
 
-    const collaborators = await EventService.listCollaborators(auth.user.id, id);
+    const data = await CollaborationService.listCollaboratorsAndInvites(auth.user.id, id);
     return NextResponse.json({
       success: true,
-      ...collaborators,
+      ...data,
     });
   } catch (error) {
     const { body, status } = formatSafeErrorResponse(error, 'Failed to fetch collaborators');
@@ -31,16 +31,16 @@ export async function POST(
     const { id } = await params;
     const body = await req.json();
 
-    const member = await EventService.addCollaborator(auth.user.id, id, body);
+    const result = await CollaborationService.inviteCollaborator(auth.user.id, id, body);
     return NextResponse.json(
       {
         success: true,
-        member,
+        ...result,
       },
       { status: 201 }
     );
   } catch (error) {
-    const { body, status } = formatSafeErrorResponse(error, 'Failed to add collaborator');
+    const { body, status } = formatSafeErrorResponse(error, 'Failed to invite collaborator');
     return NextResponse.json(body, { status });
   }
 }
@@ -62,11 +62,10 @@ export async function DELETE(
       );
     }
 
-    const result = await EventService.removeCollaborator(auth.user.id, id, memberUserId);
+    const result = await CollaborationService.revokeCollaboratorAccess(auth.user.id, id, memberUserId);
     return NextResponse.json(result);
   } catch (error) {
-    const { body, status } = formatSafeErrorResponse(error, 'Failed to remove collaborator');
+    const { body, status } = formatSafeErrorResponse(error, 'Failed to revoke collaborator access');
     return NextResponse.json(body, { status });
   }
 }
-
