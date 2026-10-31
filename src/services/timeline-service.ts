@@ -181,8 +181,9 @@ export class TimelineService {
       event.eventType
     );
 
-    await db.$transaction(async (tx) => {
-      // 1. If not preserving, clear existing unlocked milestones & tasks
+    await db.$transaction(
+      async (tx) => {
+        // 1. If not preserving, clear existing unlocked milestones & tasks
       if (!preserveUserEdits) {
         await tx.taskDependency.deleteMany({
           where: { task: { eventId } },
@@ -212,58 +213,108 @@ export class TimelineService {
           });
         }
 
-        for (const taskItem of m.tasks) {
-          // If preserving, check if locked task exists
-          if (preserveUserEdits) {
+        if (!preserveUserEdits) {
+          const taskData = m.tasks.map((taskItem) => ({
+            eventId,
+            milestoneId: milestone.id,
+            title: taskItem.title,
+            category: taskItem.category,
+            startDate: taskItem.startDate,
+            dueDate: taskItem.dueDate,
+            priority: taskItem.priority,
+            status: 'TODO',
+            progressPercent: 0,
+            isUserLocked: false,
+          }));
+          if (taskData.length > 0) {
+            await tx.task.createMany({ data: taskData });
+          }
+        } else {
+          for (const taskItem of m.tasks) {
             const existingTask = await tx.task.findFirst({
               where: { eventId, title: taskItem.title },
             });
             if (existingTask && existingTask.isUserLocked) {
               continue; // Do not overwrite user custom task
             }
-          }
 
-          await tx.task.create({
-            data: {
-              eventId,
-              milestoneId: milestone.id,
-              title: taskItem.title,
-              category: taskItem.category,
-              startDate: taskItem.startDate,
-              dueDate: taskItem.dueDate,
-              priority: taskItem.priority,
-              status: 'TODO',
-              progressPercent: 0,
-              isUserLocked: false,
-            },
-          });
+            if (existingTask) {
+              await tx.task.update({
+                where: { id: existingTask.id },
+                data: {
+                  milestoneId: milestone.id,
+                  category: taskItem.category,
+                  startDate: taskItem.startDate,
+                  dueDate: taskItem.dueDate,
+                  priority: taskItem.priority,
+                },
+              });
+            } else {
+              await tx.task.create({
+                data: {
+                  eventId,
+                  milestoneId: milestone.id,
+                  title: taskItem.title,
+                  category: taskItem.category,
+                  startDate: taskItem.startDate,
+                  dueDate: taskItem.dueDate,
+                  priority: taskItem.priority,
+                  status: 'TODO',
+                  progressPercent: 0,
+                  isUserLocked: false,
+                },
+              });
+            }
+          }
         }
       }
 
       // 3. Populate multi-day itinerary
-      for (const day of schedulePlan.itineraryDays) {
-        for (const slot of day.slots) {
-          const exists = await tx.eventSchedule.findFirst({
-            where: { eventId, dayNumber: day.dayNumber, title: slot.title },
-          });
-
-          if (!exists) {
-            await tx.eventSchedule.create({
-              data: {
-                eventId,
-                dayNumber: day.dayNumber,
-                startTime: slot.startTime,
-                endTime: slot.endTime,
-                title: slot.title,
-                location: slot.location,
-                speakerOrHost: slot.speakerOrHost,
-                orderIndex: slot.orderIndex,
-              },
+      if (!preserveUserEdits) {
+        const scheduleData = [];
+        for (const day of schedulePlan.itineraryDays) {
+          for (const slot of day.slots) {
+            scheduleData.push({
+              eventId,
+              dayNumber: day.dayNumber,
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+              title: slot.title,
+              location: slot.location,
+              speakerOrHost: slot.speakerOrHost,
+              orderIndex: slot.orderIndex,
             });
           }
         }
+        if (scheduleData.length > 0) {
+          await tx.eventSchedule.createMany({ data: scheduleData });
+        }
+      } else {
+        for (const day of schedulePlan.itineraryDays) {
+          for (const slot of day.slots) {
+            const exists = await tx.eventSchedule.findFirst({
+              where: { eventId, dayNumber: day.dayNumber, title: slot.title },
+            });
+
+            if (!exists) {
+              await tx.eventSchedule.create({
+                data: {
+                  eventId,
+                  dayNumber: day.dayNumber,
+                  startTime: slot.startTime,
+                  endTime: slot.endTime,
+                  title: slot.title,
+                  location: slot.location,
+                  speakerOrHost: slot.speakerOrHost,
+                  orderIndex: slot.orderIndex,
+                },
+              });
+            }
+          }
+        }
       }
-    });
+    },
+    { maxWait: 20000, timeout: 60000 });
 
     await logActivity({
       eventId,
@@ -471,26 +522,29 @@ export class TimelineService {
       event.milestones
     );
 
-    await db.$transaction(async (tx) => {
-      await tx.event.update({
-        where: { id: eventId },
-        data: { startDate: newStartDate, endDate: newEndDate },
-      });
-
-      for (const m of shiftedMilestones) {
-        await tx.milestone.update({
-          where: { id: m.id },
-          data: { targetDate: m.targetDate },
+    await db.$transaction(
+      async (tx) => {
+        await tx.event.update({
+          where: { id: eventId },
+          data: { startDate: newStartDate, endDate: newEndDate },
         });
-      }
 
-      for (const t of shiftedTasks) {
-        await tx.task.update({
-          where: { id: t.id },
-          data: { dueDate: t.dueDate, ...(t.startDate ? { startDate: t.startDate } : {}) },
-        });
-      }
-    });
+        for (const m of shiftedMilestones) {
+          await tx.milestone.update({
+            where: { id: m.id },
+            data: { targetDate: m.targetDate },
+          });
+        }
+
+        for (const t of shiftedTasks) {
+          await tx.task.update({
+            where: { id: t.id },
+            data: { dueDate: t.dueDate, ...(t.startDate ? { startDate: t.startDate } : {}) },
+          });
+        }
+      },
+      { maxWait: 20000, timeout: 60000 }
+    );
 
     await logActivity({
       eventId,
