@@ -181,10 +181,10 @@ export default function BudgetPage({
   }
 
   const metrics = data?.metrics || {};
-  const currency = data?.budget?.currency || 'USD';
+  const currency = data?.budget?.currency || 'INR';
 
   const formatMoney = (minorUnits: number | string = 0) => {
-    return (Number(minorUnits) / 100).toLocaleString(undefined, {
+    return (Number(minorUnits) / 100).toLocaleString(currency === 'INR' ? 'en-IN' : undefined, {
       style: 'currency',
       currency,
     });
@@ -537,7 +537,7 @@ export default function BudgetPage({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="exp-base" className="block text-xs font-semibold text-stone-700 mb-1">
-                Base Amount ($) *
+                Base Amount ({currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : currency)}) *
               </label>
               <input
                 id="exp-base"
@@ -632,7 +632,7 @@ export default function BudgetPage({
 
           <div>
             <label htmlFor="pay-amt" className="block text-xs font-semibold text-stone-700 mb-1">
-              Amount ($) *
+              Amount ({currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : currency)}) *
             </label>
             <input
               id="pay-amt"

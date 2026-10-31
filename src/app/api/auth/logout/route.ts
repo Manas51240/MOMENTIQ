@@ -4,7 +4,7 @@ import { formatSafeErrorResponse } from '@/lib/security/error-sanitizer';
 
 export async function POST(req: NextRequest) {
   try {
-    let token = req.cookies.get('celebra_session')?.value;
+    let token = req.cookies.get('momentiq_session')?.value || req.cookies.get('celebra_session')?.value;
     if (!token) {
       const authHeader = req.headers.get('authorization');
       if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       message: 'Logged out successfully',
     });
 
+    response.cookies.delete('momentiq_session');
     response.cookies.delete('celebra_session');
 
     return response;

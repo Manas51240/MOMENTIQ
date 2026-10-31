@@ -24,10 +24,10 @@ export default function NewEventPage() {
   );
   const [venue, setVenue] = useState('');
   const [city, setCity] = useState('');
-  const [country, setCountry] = useState('USA');
-  const [guestTarget, setGuestTarget] = useState(100);
-  const [budgetDollars, setBudgetDollars] = useState(25000);
-  const [currency, setCurrency] = useState('USD');
+  const [country, setCountry] = useState('India');
+  const [guestTarget, setGuestTarget] = useState(150);
+  const [budgetDollars, setBudgetDollars] = useState(1500000);
+  const [currency, setCurrency] = useState('INR');
   const [theme, setTheme] = useState('');
   const [dietaryNotes, setDietaryNotes] = useState('');
   const [tone, setTone] = useState('Festive & Elegant');
@@ -230,12 +230,12 @@ export default function NewEventPage() {
                   onChange={(e) => setCurrency(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-[#fdfbf7] text-stone-900 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 >
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
+                  <option value="INR">INR (₹ - Indian Rupee)</option>
+                  <option value="USD">USD ($ - US Dollar)</option>
+                  <option value="EUR">EUR (€ - Euro)</option>
+                  <option value="GBP">GBP (£ - British Pound)</option>
                   <option value="CAD">CAD (C$)</option>
                   <option value="AUD">AUD (A$)</option>
-                  <option value="INR">INR (₹)</option>
                 </select>
               </div>
             </div>
@@ -256,7 +256,7 @@ export default function NewEventPage() {
                   type="text"
                   value={venue}
                   onChange={(e) => setVenue(e.target.value)}
-                  placeholder="e.g. Whispering Oaks Botanical Gardens"
+                  placeholder="e.g. The Oberoi Udaivilas / Taj Palace"
                   className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-[#fdfbf7] text-stone-900 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>
@@ -270,7 +270,7 @@ export default function NewEventPage() {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="e.g. San Francisco"
+                  placeholder="e.g. Udaipur / Mumbai"
                   className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-[#fdfbf7] text-stone-900 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"
                 />
               </div>

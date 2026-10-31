@@ -44,10 +44,14 @@ function buildCreativePrompt(
   context: EventContextParams,
   variant: 'OPTION_A' | 'OPTION_B'
 ): string {
-  const budgetFormatted = (Number(context.budgetMinor) / 100).toLocaleString('en-US', {
-    style: 'currency',
-    currency: context.currency || 'USD',
-  });
+  const cur = context.currency || 'INR';
+  const budgetFormatted = (Number(context.budgetMinor) / 100).toLocaleString(
+    cur === 'INR' ? 'en-IN' : 'en-US',
+    {
+      style: 'currency',
+      currency: cur,
+    }
+  );
 
   const brief = `Event Title: ${context.title}
 Event Type: ${context.eventType}
@@ -202,10 +206,14 @@ export async function executeCreativeGeneration<T = any>(
   }
 
   const latencyMs = Date.now() - startTime;
-  const budgetFormatted = (Number(context.budgetMinor) / 100).toLocaleString('en-US', {
-    style: 'currency',
-    currency: context.currency || 'USD',
-  });
+  const cur = context.currency || 'INR';
+  const budgetFormatted = (Number(context.budgetMinor) / 100).toLocaleString(
+    cur === 'INR' ? 'en-IN' : 'en-US',
+    {
+      style: 'currency',
+      currency: cur,
+    }
+  );
 
   return {
     category: input.category,

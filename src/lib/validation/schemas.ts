@@ -93,7 +93,7 @@ export const createEventSchema = z.object({
   country: z.string().trim().max(100).default(''),
   guestTarget: z.number().int().min(1, 'Target guest count must be at least 1').max(100000),
   budgetMinor: z.number().int().min(0, 'Budget in minor units cannot be negative'),
-  currency: z.string().length(3, 'Currency must be a 3-letter ISO code').default('USD'),
+  currency: z.string().length(3, 'Currency must be a 3-letter ISO code').default('INR'),
 });
 
 export const updateEventSchema = createEventSchema.partial().extend({
@@ -227,7 +227,7 @@ export const createVendorSchema = z.object({
 export const createVendorQuoteSchema = z.object({
   vendorId: z.string().min(1),
   quoteAmountMinor: z.number().int().min(0),
-  currency: z.string().length(3).default('USD'),
+  currency: z.string().length(3).default('INR'),
   details: z.string().trim().min(2).max(1000),
   validUntil: z.string().optional(),
 });

@@ -53,12 +53,20 @@ export interface ComprehensiveBudgetSummary {
 }
 
 /**
- * Deterministically formats integer minor units into currency strings (e.g. 500000 -> "5,000.00").
+ * Deterministically formats integer minor units into currency strings (e.g. 500000 -> "₹ 5,000.00").
  */
-export function formatMinorUnits(amountMinor: bigint | number, currency: string = 'USD'): string {
+export function formatMinorUnits(amountMinor: bigint | number, currency: string = 'INR'): string {
   const num = Number(amountMinor);
   const major = (num / 100).toFixed(2);
   const parts = major.split('.');
+  if (currency === 'INR' || currency === '₹') {
+    const lastThree = parts[0].substring(parts[0].length - 3);
+    const otherNumbers = parts[0].substring(0, parts[0].length - 3);
+    const intWithIndianCommas = otherNumbers !== ''
+      ? otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree
+      : lastThree;
+    return `₹ ${intWithIndianCommas}.${parts[1]}`;
+  }
   const intWithCommas = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return `${currency} ${intWithCommas}.${parts[1]}`;
 }
@@ -112,7 +120,7 @@ export function calculateBudgetMetrics(
   totalBudgetMinor: bigint,
   contingencyPercent: number,
   categories: RawCategoryData[],
-  currency: string = 'USD'
+  currency: string = 'INR'
 ): ComprehensiveBudgetSummary {
   const totalBudget = BigInt(totalBudgetMinor);
   const contingencyPct = BigInt(Math.max(0, Math.min(50, contingencyPercent)));

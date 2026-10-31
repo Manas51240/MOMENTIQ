@@ -44,11 +44,19 @@ export async function authenticateRequest(req: Request | NextRequest): Promise<A
 
   // 2. Fall back to Cookie header
   if (!token) {
-    const cookieHeader = req.headers.get('cookie');
-    if (cookieHeader) {
-      const match = cookieHeader.match(/celebra_session=([^;]+)/);
-      if (match) {
-        token = decodeURIComponent(match[1]);
+    if ('cookies' in req && typeof (req as any).cookies?.get === 'function') {
+      const cookieVal = (req as any).cookies.get('momentiq_session')?.value || (req as any).cookies.get('celebra_session')?.value;
+      if (cookieVal) {
+        token = cookieVal;
+      }
+    }
+    if (!token) {
+      const cookieHeader = req.headers.get('cookie');
+      if (cookieHeader) {
+        const match = cookieHeader.match(/(?:momentiq_session|celebra_session)=([^;]+)/);
+        if (match) {
+          token = decodeURIComponent(match[1]);
+        }
       }
     }
   }
@@ -63,7 +71,7 @@ export async function authenticateRequest(req: Request | NextRequest): Promise<A
   const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (isCookieAuth && isMutation) {
     const origin = req.headers.get('origin');
-    const host = req.headers.get('host');
+    const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
     if (origin && host) {
       try {
         const originUrl = new URL(origin);

@@ -161,7 +161,7 @@ export class DashboardService {
           remainingBudgetMinor: '0',
           utilizationPercent: 0,
           totalContingencyMinor: '0',
-          currency: 'USD',
+          currency: 'INR',
         },
         overdueTasks: { count: 0, items: [] },
         upcomingDeadlines: { count: 0, items: [] },
@@ -186,7 +186,7 @@ export class DashboardService {
         pendingPayments: {
           count: 0,
           totalPendingMinor: '0',
-          currency: 'USD',
+          currency: 'INR',
           items: [],
         },
         unresolvedRisks: {
@@ -459,7 +459,7 @@ export class DashboardService {
         remainingBudgetMinor: remainingBudgetMinor.toString(),
         utilizationPercent,
         totalContingencyMinor: totalContingencyMinor.toString(),
-        currency: events[0]?.currency || 'USD',
+        currency: events[0]?.currency || 'INR',
       },
       overdueTasks: {
         count: overdueTaskItems.length,
@@ -482,7 +482,7 @@ export class DashboardService {
       pendingPayments: {
         count: pendingPaymentItems.length,
         totalPendingMinor: pendingPaymentsMinor.toString(),
-        currency: events[0]?.currency || 'USD',
+        currency: events[0]?.currency || 'INR',
         items: pendingPaymentItems,
       },
       unresolvedRisks: {

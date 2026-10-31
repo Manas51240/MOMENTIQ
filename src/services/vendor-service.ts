@@ -46,7 +46,7 @@ export const registerVendorSchema = z.object({
 export const addQuoteSchema = z.object({
   quoteAmountMinor: z.number().int().min(0),
   additionalFeesMinor: z.number().int().min(0).default(0),
-  currency: z.string().length(3).default('USD'),
+  currency: z.string().length(3).default('INR'),
   details: z.string().trim().min(2).max(2000),
   servicesIncluded: z.string().trim().max(2000).default(''),
   contractConditions: z.string().trim().max(2000).default(''),
@@ -464,10 +464,15 @@ export class VendorService {
     });
 
     const matrix = buildQuoteComparisonMatrix(vendors);
+    const event = await db.event.findUnique({
+      where: { id: eventId },
+      select: { currency: true },
+    });
 
     return {
       vendors: serializeBigInts(vendors),
       comparisonMatrix: matrix,
+      currency: event?.currency || 'INR',
     };
   }
 }

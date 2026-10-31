@@ -42,9 +42,13 @@ export default function DashboardPage() {
     loadData();
   }, [router]);
 
-  const formatMinor = (minor: number | string | bigint, currency = 'USD') => {
+  const formatMinor = (minor: number | string | bigint, currency = 'INR') => {
     const num = Number(minor || 0) / 100;
-    return `${currency} ${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (currency === 'INR' || currency === '₹') {
+      return `₹${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    const symbol = currency === 'USD' ? '$' : `${currency} `;
+    return `${symbol}${num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const filteredUpcoming = (telemetry?.upcomingEvents || []).filter((e) =>

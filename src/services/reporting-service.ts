@@ -646,7 +646,7 @@ export class ReportingService {
     const eventSlug = ('event' in data && data.event && 'title' in data.event ? (data.event as any).title : 'event')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-');
-    const filename = `celebra-${reportType}-${eventSlug}-${new Date().toISOString().split('T')[0]}.csv`;
+    const filename = `momentiq-${reportType}-${eventSlug}-${new Date().toISOString().split('T')[0]}.csv`;
 
     switch (reportType) {
       case 'budget-expenses': {
@@ -805,7 +805,7 @@ export class ReportingService {
 
       default: {
         // Fallback for generic event-plan and event-completion
-        csvContent = escapeCsvField(`CELEBRA PLATFORM OFFICIAL EXPORT: ${data.metadata.title}`) + '\r\n';
+        csvContent = escapeCsvField(`MOMENTIQ PLATFORM OFFICIAL EXPORT: ${data.metadata.title}`) + '\r\n';
         csvContent += escapeCsvField(`Generated on: ${new Date().toISOString()}`) + '\r\n\r\n';
         csvContent += JSON.stringify(data, null, 2);
         break;
@@ -827,7 +827,7 @@ export class ReportingService {
     const doc = new SimplePdfDocument();
 
     const eventTitle = ('event' in data && data.event && 'title' in data.event ? (data.event as any).title : 'Event');
-    const currency = ('event' in data && data.event && 'currency' in data.event ? (data.event as any).currency : 'USD');
+    const currency = ('event' in data && data.event && 'currency' in data.event ? (data.event as any).currency : 'INR');
 
     doc.addHeader({
       title: data.metadata.title,
@@ -1119,7 +1119,7 @@ export class ReportingService {
     }
 
     const eventSlug = eventTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const filename = `celebra-${reportType}-${eventSlug}-${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `momentiq-${reportType}-${eventSlug}-${new Date().toISOString().split('T')[0]}.pdf`;
     const buffer = doc.buildPdf();
 
     return {

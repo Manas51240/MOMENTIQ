@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -55,8 +55,8 @@ model Event {
   city         String          @default("")
   country      String          @default("")
   guestTarget  Int             @default(50)
-  budgetMinor  BigInt          @default(0) // Fixed integer currency in minor units (e.g. cents)
-  currency     String          @default("USD")
+  budgetMinor  BigInt          @default(0) // Fixed integer currency in minor units (e.g. paise / cents)
+  currency     String          @default("INR")
   status       String          @default("PLANNING") // DRAFT, PLANNING, ACTIVE, COMPLETED, CANCELLED
   ownerId      String
   createdAt    DateTime        @default(now())
@@ -126,7 +126,7 @@ model EventBudget {
   id                 String   @id @default(uuid())
   eventId            String   @unique
   totalBudgetMinor   BigInt   @default(0)
-  currency           String   @default("USD")
+  currency           String   @default("INR")
   contingencyPercent Int      @default(10)
   notes              String   @default("")
 
@@ -157,7 +157,7 @@ model Expense {
   baseAmountMinor BigInt         @default(0)
   taxAmountMinor  BigInt         @default(0)
   amountMinor     BigInt         @default(0)
-  currency        String         @default("USD")
+  currency        String         @default("INR")
   dueDate         DateTime?
   status          String         @default("PENDING") // PENDING, PARTIAL, COMPLETED, REFUNDED, FAILED
   receiptUrl      String?
@@ -237,7 +237,7 @@ model VendorQuote {
   vendorId            String
   quoteAmountMinor    BigInt    @default(0)
   additionalFeesMinor BigInt    @default(0)
-  currency            String    @default("USD")
+  currency            String    @default("INR")
   details             String
   servicesIncluded    String    @default("")
   contractConditions  String    @default("")

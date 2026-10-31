@@ -1,6 +1,6 @@
 /**
  * MOMENTIQ — Production & Demo Seeder
- * Populates essential demo users and rich showcase celebrations for Vercel deployment.
+ * Populates essential demo users and rich showcase celebrations for Indian celebrations.
  */
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
@@ -21,7 +21,7 @@ function hashPasswordSync(password, salt) {
 }
 
 async function main() {
-  console.log('[Seed] Seeding MOMENTIQ demo data...');
+  console.log('[Seed] Seeding MOMENTIQ demo data (India / INR)...');
 
   const demoEmail = 'demo@momentiq.com';
   const salt = crypto.randomBytes(16).toString('hex');
@@ -48,24 +48,40 @@ async function main() {
 
   console.log(`[Seed] Demo user ready: ${user.email} (ID: ${user.id})`);
 
-  // 2. Upsert Showcase Wedding Celebration
-  const weddingSlug = 'aurora-liam-vineyard-wedding';
+  // Clean up legacy USD events
+  await prisma.event.deleteMany({
+    where: { currency: 'USD' },
+  }).catch(() => {});
+
+  // 2. Upsert Showcase Wedding Celebration (INR)
+  const weddingSlug = 'aarav-meera-royal-wedding';
   const wedding = await prisma.event.upsert({
     where: { slug: weddingSlug },
-    update: {},
+    update: {
+      title: "Aarav & Meera's Royal Palace Wedding",
+      description: 'A grand regal heritage celebration featuring Sangeet, traditional Vedic pheras, Sufi musical night, and authentic royal Rajasthani banquet.',
+      eventType: 'WEDDING',
+      venue: 'The Oberoi Udaivilas',
+      city: 'Udaipur, Rajasthan',
+      country: 'India',
+      guestTarget: 350,
+      budgetMinor: 250000000n, // ₹25,00,000.00 (25 Lakhs)
+      currency: 'INR',
+      status: 'PLANNING',
+    },
     create: {
       slug: weddingSlug,
-      title: "Aurora & Liam's Grand Vineyard Wedding",
-      description: 'A romantic outdoor vineyard celebration with sunset ceremony, live acoustic quartet, and bespoke farm-to-table cuisine.',
+      title: "Aarav & Meera's Royal Palace Wedding",
+      description: 'A grand regal heritage celebration featuring Sangeet, traditional Vedic pheras, Sufi musical night, and authentic royal Rajasthani banquet.',
       eventType: 'WEDDING',
       startDate: new Date('2026-11-20T16:00:00Z'),
-      endDate: new Date('2026-11-20T23:30:00Z'),
-      venue: 'Meadowood Napa Valley Estate',
-      city: 'St. Helena, California',
-      country: 'USA',
-      guestTarget: 150,
-      budgetMinor: 4500000n, // $45,000.00
-      currency: 'USD',
+      endDate: new Date('2026-11-21T02:30:00Z'),
+      venue: 'The Oberoi Udaivilas',
+      city: 'Udaipur, Rajasthan',
+      country: 'India',
+      guestTarget: 350,
+      budgetMinor: 250000000n, // ₹25,00,000.00
+      currency: 'INR',
       status: 'PLANNING',
       ownerId: user.id,
     },
@@ -87,28 +103,49 @@ async function main() {
     },
   });
 
-  // Seed Budget Categories & Expenses for Wedding
+  // Seed Budget Categories & Expenses for Wedding (in INR)
   const cateringCat = await prisma.budgetCategory.upsert({
     where: { id: `cat-catering-${wedding.id}` },
-    update: {},
+    update: {
+      allocatedMinor: 100000000n, // ₹10,00,000
+      spentMinor: 80000000n,
+    },
     create: {
       id: `cat-catering-${wedding.id}`,
       eventId: wedding.id,
-      name: 'Catering & Beverages',
-      allocatedMinor: 1800000n,
-      spentMinor: 1400000n,
+      name: 'Catering & Royal Sweets',
+      allocatedMinor: 100000000n,
+      spentMinor: 80000000n,
+    },
+  });
+
+  const decorCat = await prisma.budgetCategory.upsert({
+    where: { id: `cat-decor-${wedding.id}` },
+    update: {
+      allocatedMinor: 60000000n, // ₹6,00,000
+      spentMinor: 50000000n,
+    },
+    create: {
+      id: `cat-decor-${wedding.id}`,
+      eventId: wedding.id,
+      name: 'Mandap & Royal Floral Decor',
+      allocatedMinor: 60000000n,
+      spentMinor: 50000000n,
     },
   });
 
   const photoCat = await prisma.budgetCategory.upsert({
     where: { id: `cat-photo-${wedding.id}` },
-    update: {},
+    update: {
+      allocatedMinor: 50000000n, // ₹5,00,000
+      spentMinor: 35000000n,
+    },
     create: {
       id: `cat-photo-${wedding.id}`,
       eventId: wedding.id,
       name: 'Photography & Cinema',
-      allocatedMinor: 800000n,
-      spentMinor: 650000n,
+      allocatedMinor: 50000000n,
+      spentMinor: 35000000n,
     },
   });
 
@@ -118,23 +155,34 @@ async function main() {
         id: `exp-catering-${wedding.id}`,
         eventId: wedding.id,
         categoryId: cateringCat.id,
-        title: 'Artisan 4-Course Plated Dinner',
-        baseAmountMinor: 1400000n,
-        amountMinor: 1400000n,
-        currency: 'USD',
+        title: 'Authentic Royal Rajasthani Banquet & Mithai',
+        baseAmountMinor: 80000000n,
+        amountMinor: 80000000n,
+        currency: 'INR',
         status: 'COMPLETED',
-        notes: 'Includes wine pairings and passed hors d\'oeuvres',
+        notes: 'Includes traditional thali, live chaat counter, and Dal Baati Churma',
+      },
+      {
+        id: `exp-decor-${wedding.id}`,
+        eventId: wedding.id,
+        categoryId: decorCat.id,
+        title: 'Lakeside Mandap & Marigold Floral Chandelier',
+        baseAmountMinor: 50000000n,
+        amountMinor: 50000000n,
+        currency: 'INR',
+        status: 'COMPLETED',
+        notes: 'Includes carved pillars, floating lotus pond, and ambient palace lighting',
       },
       {
         id: `exp-photo-${wedding.id}`,
         eventId: wedding.id,
         categoryId: photoCat.id,
-        title: 'Full-Day Photo & Drone Coverage',
-        baseAmountMinor: 650000n,
-        amountMinor: 650000n,
-        currency: 'USD',
+        title: 'Cinematic 4K Wedding Film & Drone Coverage',
+        baseAmountMinor: 35000000n,
+        amountMinor: 35000000n,
+        currency: 'INR',
         status: 'PARTIAL',
-        notes: '2 photographers, full color grading, highlight reel',
+        notes: '3 cinematographers, traditional photobook, teaser trailer',
       },
     ],
   }).catch(() => {});
@@ -145,8 +193,8 @@ async function main() {
       {
         id: `task-1-${wedding.id}`,
         eventId: wedding.id,
-        title: 'Final Floral Mockup Approval',
-        description: 'Review ceremony arch and tablescape floral centerpieces',
+        title: 'Mandap & Floral Arch Final Walkthrough',
+        description: 'Verify fresh marigold and jasmine garlands with Udaipur florist',
         status: 'COMPLETED',
         priority: 'HIGH',
         dueDate: new Date('2026-11-05T12:00:00Z'),
@@ -155,8 +203,8 @@ async function main() {
       {
         id: `task-2-${wedding.id}`,
         eventId: wedding.id,
-        title: 'Rehearsal Dinner Walkthrough',
-        description: 'Sound check with live quartet and bridal party positioning',
+        title: 'Sangeet Choreography & Audio Setup',
+        description: 'Sound check with live Rajasthani folk troupe and Bollywood DJ',
         status: 'IN_PROGRESS',
         priority: 'CRITICAL',
         dueDate: new Date('2026-11-19T17:00:00Z'),
@@ -165,8 +213,8 @@ async function main() {
       {
         id: `task-3-${wedding.id}`,
         eventId: wedding.id,
-        title: 'Guest Transportation Shuttle Confirmation',
-        description: 'Coordinate luxury coach departures from hotel to estate',
+        title: 'Baraat Route & Dhol Tasha Procession Permit',
+        description: 'Coordinate lakeside Baraat timing with hotel administration',
         status: 'TODO',
         priority: 'MEDIUM',
         dueDate: new Date('2026-11-15T10:00:00Z'),
@@ -182,30 +230,30 @@ async function main() {
         id: `risk-1-${wedding.id}`,
         eventId: wedding.id,
         category: 'Weather',
-        title: 'Late Afternoon Autumn Rain Shower',
-        description: 'Outdoor vineyard lawn may become damp during ceremony.',
-        probability: 2,
-        impact: 4,
-        riskScore: 8,
+        title: 'Evening Lakeside Breeze & Cool Temperature',
+        description: 'Lakeside temperature can drop after sunset in November.',
+        probability: 3,
+        impact: 3,
+        riskScore: 9,
         severity: 'MEDIUM',
-        mitigation: 'Covered glass pavilion on standby with heating lamps.',
-        contingency: 'Pivot ceremony to heated glass pavilion within 30 minutes.',
+        mitigation: 'Outdoor patio heaters and bespoke pashmina shawls for guests.',
+        contingency: 'Shift dinner to the enclosed palace courtyard if winds rise.',
         ownerName: 'Estate Coordinator',
         status: 'MITIGATED',
       },
       {
         id: `risk-2-${wedding.id}`,
         eventId: wedding.id,
-        category: 'Vendors',
-        title: 'Custom Wine Delivery Delay',
-        description: 'Special reserve vintage shipment from Sonoma.',
-        probability: 1,
+        category: 'Transport',
+        title: 'Udaipur Airport Arrival Congestion',
+        description: 'Multiple flights arriving simultaneously on wedding eve.',
+        probability: 2,
         impact: 3,
-        riskScore: 3,
+        riskScore: 6,
         severity: 'LOW',
-        mitigation: 'Confirmed tracking; backup estate cellar selections reserved.',
-        contingency: 'Serve estate reserve Cabernet.',
-        ownerName: 'Lead Sommelier',
+        mitigation: 'Dedicated hospitality desk at airport with chartered AC coaches.',
+        contingency: 'Standby fleet of backup Innova Crysta vehicles on call.',
+        ownerName: 'Logistics Manager',
         status: 'IDENTIFIED',
       },
     ],
@@ -217,54 +265,65 @@ async function main() {
       {
         id: `guest-1-${wedding.id}`,
         eventId: wedding.id,
-        name: 'Eleanor Vance',
-        email: 'eleanor.vance@example.com',
+        name: 'Rohan Verma',
+        email: 'rohan.verma@example.com',
         rsvpStatus: 'ATTENDING',
         attendingCount: 2,
-        dietaryRequirements: 'Gluten-Free',
+        dietaryRequirements: 'Vegetarian',
         invitationCode: 'CELEB-DEMO-01',
       },
       {
         id: `guest-2-${wedding.id}`,
         eventId: wedding.id,
-        name: 'Julian Sterling',
-        email: 'julian.sterling@example.com',
+        name: 'Priya Iyer',
+        email: 'priya.iyer@example.com',
         rsvpStatus: 'ATTENDING',
         attendingCount: 1,
-        dietaryRequirements: 'None',
+        dietaryRequirements: 'Jain Vegetarian',
         invitationCode: 'CELEB-DEMO-02',
       },
       {
         id: `guest-3-${wedding.id}`,
         eventId: wedding.id,
-        name: 'Sophia Montgomery',
-        email: 'sophia.m@example.com',
+        name: 'Vikramaditya Singhania',
+        email: 'vikram.singhania@example.com',
         rsvpStatus: 'PENDING',
         attendingCount: 2,
-        dietaryRequirements: 'Vegetarian',
+        dietaryRequirements: 'None',
         invitationCode: 'CELEB-DEMO-03',
       },
     ],
   }).catch(() => {});
 
-  // 3. Upsert Showcase Birthday Celebration
-  const birthdaySlug = 'marcus-40th-rooftop-jubilee';
+  // 3. Upsert Showcase Birthday Celebration (INR)
+  const birthdaySlug = 'marcus-40th-skyline-jubilee';
   const birthday = await prisma.event.upsert({
     where: { slug: birthdaySlug },
-    update: {},
+    update: {
+      title: "Marcus's 40th Skyline Jubilee",
+      description: 'An electrifying skyline birthday celebration in Mumbai featuring live fusion music, craft mixology, and panoramic Arabian Sea views.',
+      eventType: 'BIRTHDAY',
+      venue: 'Aer Sky Lounge, Four Seasons',
+      city: 'Mumbai, Maharashtra',
+      country: 'India',
+      guestTarget: 80,
+      budgetMinor: 50000000n, // ₹5,00,000.00
+      currency: 'INR',
+      status: 'ACTIVE',
+    },
     create: {
       slug: birthdaySlug,
-      title: "Marcus's 40th Rooftop Jubilee",
-      description: 'An electrifying skyline birthday celebration featuring craft mixology, live funk DJ, and panoramic sunset views.',
+      title: "Marcus's 40th Skyline Jubilee",
+      description: 'An electrifying skyline birthday celebration in Mumbai featuring live fusion music, craft mixology, and panoramic Arabian Sea views.',
       eventType: 'BIRTHDAY',
       startDate: new Date('2026-12-12T19:00:00Z'),
       endDate: new Date('2026-12-13T01:00:00Z'),
-      venue: 'Penthouse 88 Sky Lounge',
-      city: 'Manhattan, New York',
-      country: 'USA',
+      venue: 'Aer Sky Lounge, Four Seasons',
+      city: 'Mumbai, Maharashtra',
+      country: 'India',
       guestTarget: 80,
-      budgetMinor: 1500000n, // $15,000.00
-      currency: 'USD',
+      budgetMinor: 50000000n, // ₹5,00,000.00
+      currency: 'INR',
       status: 'ACTIVE',
       ownerId: user.id,
     },
@@ -285,7 +344,7 @@ async function main() {
     },
   });
 
-  console.log('[Seed] Seeding completed successfully!');
+  console.log('[Seed] Seeding completed successfully (India / INR)!');
 }
 
 main()

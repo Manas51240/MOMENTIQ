@@ -233,10 +233,12 @@ export default function VendorsPage({
     );
   }
 
+  const currency = data?.currency || 'INR';
+
   const formatMoney = (minorUnits: number | string = 0) => {
-    return (Number(minorUnits) / 100).toLocaleString(undefined, {
+    return (Number(minorUnits) / 100).toLocaleString(currency === 'INR' ? 'en-IN' : undefined, {
       style: 'currency',
-      currency: 'USD',
+      currency,
     });
   };
 
@@ -539,7 +541,7 @@ export default function VendorsPage({
 
             <div>
               <label htmlFor="vnd-est" className="block text-xs font-semibold text-stone-700 mb-1">
-                Estimated Price ($)
+                Estimated Price ({currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : currency)})
               </label>
               <input
                 id="vnd-est"
@@ -613,7 +615,7 @@ export default function VendorsPage({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="q-base" className="block text-xs font-semibold text-stone-700 mb-1">
-                Base Price ($) *
+                Base Price ({currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : currency)}) *
               </label>
               <input
                 id="q-base"
@@ -628,7 +630,7 @@ export default function VendorsPage({
 
             <div>
               <label htmlFor="q-extra" className="block text-xs font-semibold text-stone-700 mb-1">
-                Additional Fees ($)
+                Additional Fees ({currency === 'INR' ? '₹' : (currency === 'USD' ? '$' : currency)})
               </label>
               <input
                 id="q-extra"

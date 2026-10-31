@@ -38,9 +38,12 @@ export function escapeCsvField(value: string | number | boolean | null | undefin
 /**
  * Formats integer minor currency units (cents) into a clean decimal string, e.g. 12550 -> "125.50"
  */
-export function formatMinorToCurrency(minor: number | bigint | string, currency = 'USD'): string {
+export function formatMinorToCurrency(minor: number | bigint | string, currency = 'INR'): string {
   const num = typeof minor === 'bigint' ? Number(minor) : Number(minor || 0);
   const formatted = (num / 100).toFixed(2);
+  if (currency === 'INR' || currency === '₹') {
+    return `₹ ${formatted}`;
+  }
   return `${currency} ${formatted}`;
 }
 

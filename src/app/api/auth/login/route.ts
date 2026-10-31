@@ -16,13 +16,16 @@ export async function POST(req: NextRequest) {
       token: result.token,
     });
 
-    response.cookies.set('celebra_session', result.token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       path: '/',
       maxAge: 7 * 24 * 60 * 60,
-    });
+    };
+
+    response.cookies.set('momentiq_session', result.token, cookieOptions);
+    response.cookies.set('celebra_session', result.token, cookieOptions);
 
     return response;
   } catch (error) {

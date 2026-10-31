@@ -118,6 +118,8 @@ export default function EventOverviewPage({
   const budgetSpent = budgetMetrics ? Number(budgetMetrics.totalActualPaidMinor) / 100 : 0;
   const totalBudget = Number(event.budgetMinor) / 100;
   const budgetUtilization = totalBudget > 0 ? Math.min(100, Math.round((budgetSpent / totalBudget) * 100)) : 0;
+  const currSymbol = event.currency === 'USD' ? '$' : (event.currency === 'INR' ? '₹' : `${event.currency} `);
+  const locale = event.currency === 'INR' ? 'en-IN' : 'en-US';
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fdfbf7] text-stone-900">
@@ -193,7 +195,7 @@ export default function EventOverviewPage({
                 {budgetUtilization}%
               </div>
               <p className="text-xs text-stone-600 mt-1">
-                ${budgetSpent.toLocaleString()} spent of ${totalBudget.toLocaleString()}
+                {currSymbol}{budgetSpent.toLocaleString(locale)} spent of {currSymbol}{totalBudget.toLocaleString(locale)}
               </p>
             </div>
             <div className="w-full bg-stone-100 rounded-full h-2.5 mt-4 overflow-hidden border border-stone-200">
