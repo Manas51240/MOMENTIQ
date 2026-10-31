@@ -351,7 +351,7 @@ export default function NewEventPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold shadow-md transition-all disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-amber-500/40"
+              className="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-bold shadow-md transition-all disabled:opacity-50 focus:outline-none focus:ring-4 focus:ring-amber-500/40"
             >
               {loading ? 'Initializing Workspace...' : 'Create Celebration'}
             </button>

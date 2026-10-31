@@ -93,7 +93,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/events/new"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md transition-all hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-500/40"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-md transition-all hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-500/40"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -169,11 +169,11 @@ export default function DashboardPage() {
                 <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block">
                   10. Unresolved Risks
                 </span>
-                <div className="text-2xl sm:text-3xl font-extrabold text-amber-600">
+                <div className="text-2xl sm:text-3xl font-extrabold text-amber-800">
                   {telemetry.unresolvedRisks.totalUnresolved}
                 </div>
                 <span className="text-xs text-stone-500 block">
-                  <span className="font-bold text-rose-600">{telemetry.unresolvedRisks.highHazardCount}</span> high/critical hazard
+                  <span className="font-bold text-rose-700">{telemetry.unresolvedRisks.highHazardCount}</span> high/critical hazard
                 </span>
               </div>
             </div>
@@ -244,10 +244,10 @@ export default function DashboardPage() {
                   <tbody className="divide-y divide-stone-200">
                     <tr className="font-semibold text-stone-900">
                       <td className="px-4 py-3">{formatMinor(telemetry.budgetUtilization.totalPlannedMinor, telemetry.budgetUtilization.currency)}</td>
-                      <td className="px-4 py-3 text-rose-600">{formatMinor(telemetry.budgetUtilization.totalSpentMinor, telemetry.budgetUtilization.currency)}</td>
-                      <td className="px-4 py-3 text-emerald-600">{formatMinor(telemetry.budgetUtilization.remainingBudgetMinor, telemetry.budgetUtilization.currency)}</td>
+                      <td className="px-4 py-3 text-rose-700">{formatMinor(telemetry.budgetUtilization.totalSpentMinor, telemetry.budgetUtilization.currency)}</td>
+                      <td className="px-4 py-3 text-emerald-800">{formatMinor(telemetry.budgetUtilization.remainingBudgetMinor, telemetry.budgetUtilization.currency)}</td>
                       <td className="px-4 py-3 text-stone-600">{formatMinor(telemetry.budgetUtilization.totalContingencyMinor, telemetry.budgetUtilization.currency)}</td>
-                      <td className="px-4 py-3 text-amber-600">{formatMinor(telemetry.pendingPayments.totalPendingMinor, telemetry.pendingPayments.currency)}</td>
+                      <td className="px-4 py-3 text-amber-800">{formatMinor(telemetry.pendingPayments.totalPendingMinor, telemetry.pendingPayments.currency)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-stone-50">
                     <span className="text-stone-600">Provisional</span>
-                    <span className="font-bold text-amber-600">{telemetry.vendorBookingStatus.provisional}</span>
+                    <span className="font-bold text-amber-800">{telemetry.vendorBookingStatus.provisional}</span>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-stone-50">
                     <span className="text-stone-600">Negotiating</span>

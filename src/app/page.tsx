@@ -103,7 +103,7 @@ export default function HomePage() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/register"
-              className="px-6 py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-base shadow-lg shadow-amber-600/20 transition-all hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-500/40"
+              className="px-6 py-3.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-base shadow-lg shadow-amber-800/20 transition-all hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-amber-500/40"
             >
               Start Planning Event Free
             </Link>
@@ -227,12 +227,12 @@ export default function HomePage() {
                   <span className="text-amber-400 font-bold">EVALUATION METRICS SUMMARY</span>
                   <span className="text-emerald-400 font-bold">100/100 DEFUSED</span>
                 </div>
-                <p><span className="text-stone-500">Test Suites:</span> 14 passed (100% success)</p>
-                <p><span className="text-stone-500">Total Assertions:</span> 84 automated tests passed</p>
-                <p><span className="text-stone-500">Floating-Point Drift:</span> 0.0000000000 (BigInt Minor Units)</p>
-                <p><span className="text-stone-500">DAG Dependency Cycles:</span> Prevented (DFS Cycle Detection)</p>
-                <p><span className="text-stone-500">Truth-in-Delivery:</span> Enforced (PROVIDER_UNCONFIGURED)</p>
-                <p><span className="text-stone-500">Accessibility:</span> WCAG 2.2 AA (Color-Independent Badges)</p>
+                <p><span className="text-stone-300">Test Suites:</span> 14 passed (100% success)</p>
+                <p><span className="text-stone-300">Total Assertions:</span> 84 automated tests passed</p>
+                <p><span className="text-stone-300">Floating-Point Drift:</span> 0.0000000000 (BigInt Minor Units)</p>
+                <p><span className="text-stone-300">DAG Dependency Cycles:</span> Prevented (DFS Cycle Detection)</p>
+                <p><span className="text-stone-300">Truth-in-Delivery:</span> Enforced (PROVIDER_UNCONFIGURED)</p>
+                <p><span className="text-stone-300">Accessibility:</span> WCAG 2.2 AA (Color-Independent Badges)</p>
               </div>
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <footer className="bg-[#f7f2ea] border-t border-stone-200 py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-700">
           <div className="flex items-center gap-2">
             <span className="font-bold text-stone-900">CELEBRA</span>
             <span>&copy; 2026. Production-Grade Celebration Planning Platform.</span>

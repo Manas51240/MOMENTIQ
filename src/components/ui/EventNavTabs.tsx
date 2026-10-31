@@ -38,7 +38,7 @@ export function EventNavTabs({ eventId }: EventNavTabsProps) {
             aria-current={isActive ? 'page' : undefined}
             className={`px-3.5 py-2 text-sm font-semibold rounded-lg whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 ${
               isActive
-                ? 'bg-amber-600 text-white shadow-sm'
+                ? 'bg-amber-800 text-white shadow-sm'
                 : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
             }`}
           >
