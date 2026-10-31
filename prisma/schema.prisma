@@ -1,0 +1,520 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  salt          String
+  name          String
+  role          String         @default("USER") // USER, ADMIN
+  emailVerified Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  sessions      UserSession[]
+  eventMembers  EventMember[]
+  ownedEvents   Event[]        @relation("EventOwner")
+  activityLogs  ActivityLog[]
+  documents     UploadedDocument[]
+  aiFeedback    AiFeedback[]
+
+  @@index([email])
+}
+
+model UserSession {
+  id           String    @id @default(uuid())
+  userId       String
+  sessionToken String    @unique
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  userAgent    String?
+  ipAddress    String?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionToken])
+}
+
+model Event {
+  id           String          @id @default(uuid())
+  slug         String          @unique
+  title        String
+  description  String          @default("")
+  eventType    String          // WEDDING, BIRTHDAY, ANNIVERSARY, ENGAGEMENT, BABY_SHOWER, CORPORATE, CULTURAL, COMMUNITY, CUSTOM
+  startDate    DateTime
+  endDate      DateTime
+  venue        String          @default("To be announced")
+  city         String          @default("")
+  country      String          @default("")
+  guestTarget  Int             @default(50)
+  budgetMinor  BigInt          @default(0) // Fixed integer currency in minor units (e.g. cents)
+  currency     String          @default("USD")
+  status       String          @default("PLANNING") // DRAFT, PLANNING, ACTIVE, COMPLETED, CANCELLED
+  ownerId      String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  owner        User            @relation("EventOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members      EventMember[]
+  preferences  EventPreference?
+  budget       EventBudget?
+  categories   BudgetCategory[]
+  expenses     Expense[]
+  payments     Payment[]
+  vendors      Vendor[]
+  quotes       VendorQuote[]
+  bookings     VendorBooking[]
+  guests       Guest[]
+  guestGroups  GuestGroup[]
+  seating      SeatingAssignment[]
+  tasks        Task[]
+  milestones   Milestone[]
+  schedules    EventSchedule[]
+  risks        RiskItem[]
+  activityLogs ActivityLog[]
+  documents    UploadedDocument[]
+  aiGenerations AiGeneration[]
+  notifications Notification[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([eventType])
+}
+
+model EventMember {
+  id        String   @id @default(uuid())
+  eventId   String
+  userId    String
+  role      String   // OWNER, PLANNER, COLLABORATOR, VIEWER
+  invitedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+}
+
+model EventPreference {
+  id                 String   @id @default(uuid())
+  eventId            String   @unique
+  theme              String   @default("")
+  colorPaletteJson   String   @default("[]") // JSON string of hex strings
+  tone               String   @default("Festive & Elegant")
+  culturalTraditionsJson String @default("[]") // JSON array of traditions
+  dietaryNotes       String   @default("")
+  musicPreferences   String   @default("")
+  notes              String   @default("")
+
+  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model EventBudget {
+  id                 String   @id @default(uuid())
+  eventId            String   @unique
+  totalBudgetMinor   BigInt   @default(0)
+  currency           String   @default("USD")
+  contingencyPercent Int      @default(10)
+  notes              String   @default("")
+
+  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model BudgetCategory {
+  id             String    @id @default(uuid())
+  eventId        String
+  name           String
+  allocatedMinor BigInt    @default(0)
+  spentMinor     BigInt    @default(0)
+  icon           String?
+  color          String?
+
+  event          Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  expenses       Expense[]
+
+  @@index([eventId])
+}
+
+model Expense {
+  id              String         @id @default(uuid())
+  eventId         String
+  categoryId      String
+  vendorId        String?
+  title           String
+  baseAmountMinor BigInt         @default(0)
+  taxAmountMinor  BigInt         @default(0)
+  amountMinor     BigInt         @default(0)
+  currency        String         @default("USD")
+  dueDate         DateTime?
+  status          String         @default("PENDING") // PENDING, PARTIAL, COMPLETED, REFUNDED, FAILED
+  receiptUrl      String?
+  notes           String?
+  createdAt       DateTime       @default(now())
+
+  event       Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  category    BudgetCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  vendor      Vendor?        @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  payments    Payment[]
+
+  @@index([eventId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  eventId        String
+  expenseId      String
+  amountMinor    BigInt   @default(0)
+  paymentMethod  String
+  transactionRef String?
+  isRefund       Boolean  @default(false)
+  paidAt         DateTime @default(now())
+  status         String   @default("COMPLETED")
+  createdAt      DateTime @default(now())
+
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  expense        Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([expenseId])
+}
+
+model VendorCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String   @default("")
+  vendors     Vendor[]
+}
+
+model Vendor {
+  id                     String          @id @default(uuid())
+  eventId                String
+  categoryId             String
+  name                   String
+  contactName            String?
+  email                  String?
+  phone                  String?
+  website                String?
+  location               String          @default("")
+  serviceDescription     String          @default("")
+  priceEstimateMinor     BigInt          @default(0)
+  status                 String          @default("SHORTLISTED") // SHORTLISTED, CONTACTED, QUOTATION_RECEIVED, NEGOTIATING, CONFIRMED, COMPLETED, REJECTED, CANCELLED
+  isAvailabilityVerified Boolean         @default(false)
+  availabilityNotes      String          @default("")
+  sourceTag              String          @default("USER_ENTERED") // USER_ENTERED, DEMO_ILLUSTRATIVE, VERIFIED_PARTNER
+  notes                  String?
+  rating                 Int?            @default(5)
+  createdAt              DateTime        @default(now())
+
+  event                  Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  category               VendorCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  quotes                 VendorQuote[]
+  bookings               VendorBooking[]
+  expenses               Expense[]
+
+  @@index([eventId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+model VendorQuote {
+  id                  String    @id @default(uuid())
+  eventId             String
+  vendorId            String
+  quoteAmountMinor    BigInt    @default(0)
+  additionalFeesMinor BigInt    @default(0)
+  currency            String    @default("USD")
+  details             String
+  servicesIncluded    String    @default("")
+  contractConditions  String    @default("")
+  status              String    @default("REQUESTED") // REQUESTED, RECEIVED, ACCEPTED, DECLINED, EXPIRED
+  isVerified          Boolean   @default(false)
+  documentStorageKey  String?
+  validUntil          DateTime?
+  createdAt           DateTime  @default(now())
+
+  event               Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  vendor              Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([vendorId])
+  @@index([status])
+}
+
+model VendorBooking {
+  id                  String    @id @default(uuid())
+  eventId             String
+  vendorId            String
+  contractAmountMinor BigInt    @default(0)
+  depositAmountMinor  BigInt    @default(0)
+  status              String    @default("PROVISIONAL") // DRAFT, PROVISIONAL, CONFIRMED, COMPLETED, CANCELLED
+  contractUrl         String?
+  contractStorageKey  String?
+  notes               String    @default("")
+  signedAt            DateTime?
+  createdAt           DateTime  @default(now())
+
+  event               Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  vendor              Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([vendorId])
+  @@index([status])
+}
+
+model GuestGroup {
+  id      String  @id @default(uuid())
+  eventId String
+  name    String
+
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guests  Guest[]
+
+  @@index([eventId])
+}
+
+model Guest {
+  id                  String              @id @default(uuid())
+  eventId             String
+  groupId             String?
+  name                String
+  email               String?
+  phone               String?
+  rsvpStatus          String              @default("PENDING") // ATTENDING, DECLINED, MAYBE, PENDING
+  attendingCount      Int                 @default(1)
+  dietaryRequirements String?
+  accessibilityNotes  String              @default("")
+  isPlusOne           Boolean             @default(false)
+  plusOneOf           String?
+  seatingTable        String?
+  invitationCode      String              @unique
+  deliveryStatus      String              @default("NOT_SENT") // NOT_SENT, QUEUED, SENT, DELIVERED, FAILED, PROVIDER_UNCONFIGURED
+  deliveryChannel     String              @default("NONE")     // EMAIL, SMS, WHATSAPP, MANUAL_PRINT
+  invitationSentAt    DateTime?
+  rsvpRespondedAt     DateTime?
+  checkedIn           Boolean             @default(false)
+  checkedInAt         DateTime?
+  customWording       String              @default("")
+  createdAt           DateTime            @default(now())
+
+  event               Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  group               GuestGroup?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  seatingAssignments  SeatingAssignment[]
+
+  @@index([eventId])
+  @@index([invitationCode])
+  @@index([rsvpStatus])
+  @@index([checkedIn])
+}
+
+model SeatingAssignment {
+  id          String @id @default(uuid())
+  eventId     String
+  tableNumber Int
+  tableName   String @default("Table")
+  seatNumber  Int
+  guestId     String
+
+  event       Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  guest       Guest  @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, tableNumber, seatNumber])
+  @@index([eventId])
+  @@index([guestId])
+}
+
+model Milestone {
+  id         String   @id @default(uuid())
+  eventId    String
+  title      String
+  targetDate DateTime
+  status     String   @default("PENDING") // PENDING, REACHED, DELAYED
+  orderIndex Int      @default(0)
+
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tasks      Task[]
+
+  @@index([eventId])
+}
+
+model Task {
+  id              String           @id @default(uuid())
+  eventId         String
+  title           String
+  description     String           @default("")
+  category        String           @default("General")
+  assignedToId    String?
+  startDate       DateTime?
+  dueDate         DateTime
+  priority        String           @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status          String           @default("TODO")     // TODO, IN_PROGRESS, COMPLETED, BLOCKED
+  progressPercent Int              @default(0)
+  isUserLocked    Boolean          @default(false)
+  milestoneId     String?
+  createdAt       DateTime         @default(now())
+
+  event        Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  milestone    Milestone?       @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  preceding    TaskDependency[] @relation("TaskSuccessor")
+  succeeding   TaskDependency[] @relation("TaskPredecessor")
+
+  @@index([eventId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model TaskDependency {
+  id              String @id @default(uuid())
+  taskId          String
+  dependsOnTaskId String
+
+  task            Task   @relation("TaskSuccessor", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOn       Task   @relation("TaskPredecessor", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnTaskId])
+}
+
+model EventSchedule {
+  id            String   @id @default(uuid())
+  eventId       String
+  dayNumber     Int      @default(1)
+  startTime     String   // e.g. "09:00" or ISO
+  endTime       String   // e.g. "10:30" or ISO
+  title         String
+  location      String?
+  speakerOrHost String?
+  notes         String?
+  orderIndex    Int      @default(0)
+
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([dayNumber])
+}
+
+model RiskItem {
+  id          String           @id @default(uuid())
+  eventId     String
+  title       String
+  category    String           @default("Operational")
+  probability Int              @default(1) // 1 to 5
+  impact      Int              @default(1) // 1 to 5
+  riskScore   Int              @default(1) // 1 to 25
+  status      String           @default("IDENTIFIED") // IDENTIFIED, MITIGATED, ACCEPTED, CLOSED
+  notes       String?
+  createdAt   DateTime         @default(now())
+
+  event       Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  mitigations RiskMitigation[]
+
+  @@index([eventId])
+  @@index([riskScore])
+}
+
+model RiskMitigation {
+  id              String   @id @default(uuid())
+  riskId          String
+  mitigationPlan  String
+  contingencyPlan String
+  ownerId         String?
+  status          String   @default("PLANNED") // PLANNED, ACTIVE, RESOLVED
+
+  risk            RiskItem @relation(fields: [riskId], references: [id], onDelete: Cascade)
+
+  @@index([riskId])
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  eventId     String
+  userId      String
+  action      String
+  entityType  String
+  entityId    String
+  detailsJson String?
+  createdAt   DateTime @default(now())
+
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model UploadedDocument {
+  id            String   @id @default(uuid())
+  eventId       String
+  userId        String
+  fileName      String
+  storageKey    String   @unique
+  mimeType      String
+  fileSizeBytes Int
+  checksum      String
+  createdAt     DateTime @default(now())
+
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([userId])
+}
+
+model AiGeneration {
+  id              String       @id @default(uuid())
+  eventId         String
+  serviceType     String
+  promptVersion   String
+  latencyMs       Int
+  inputParamsJson String
+  outputJson      String
+  createdAt       DateTime     @default(now())
+
+  event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  feedbacks       AiFeedback[]
+
+  @@index([eventId])
+  @@index([serviceType])
+}
+
+model AiFeedback {
+  id           String       @id @default(uuid())
+  generationId String
+  userId       String
+  rating       Int          // 1-5
+  comments     String?
+  createdAt    DateTime     @default(now())
+
+  generation   AiGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([generationId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  eventId   String
+  userId    String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([userId])
+}
+

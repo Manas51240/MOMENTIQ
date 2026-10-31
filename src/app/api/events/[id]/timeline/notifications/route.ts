@@ -1,0 +1,32 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { authenticateRequest } from '@/lib/security/auth-middleware';
+import { TimelineService } from '@/services/timeline-service';
+import { formatSafeErrorResponse } from '@/lib/security/error-sanitizer';
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const auth = await authenticateRequest(req);
+    const { id } = await params;
+
+    const notifications = await TimelineService.generateDeadlineNotifications(
+      auth.user.id,
+      id
+    );
+
+    return NextResponse.json({
+      success: true,
+      generatedCount: notifications.length,
+      notifications,
+    });
+  } catch (error) {
+    const { body, status } = formatSafeErrorResponse(
+      error,
+      'Failed to generate deadline notifications'
+    );
+    return NextResponse.json(body, { status });
+  }
+}
+
