@@ -15,18 +15,34 @@ jobs:
     name: Code Quality, Security & Verification
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [20.x]
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      SESSION_SECRET: cele_ci_session_secret_at_least_64_characters_long_entropy_secure_key_123
+      DATABASE_URL: postgresql://postgres:postgrespassword@localhost:5432/testdb?schema=public
 
     steps:
       - name: 📥 Check out repository
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js ${{ matrix.node-version }}
+      - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
           cache: 'npm'
 
       - name: 📦 Install dependencies
@@ -38,16 +54,14 @@ jobs:
       - name: 🔍 ESLint Verification
         run: npm run lint
 
-      - name: 🧪 Unit & Integration Test Suite
-        run: npm test
-        env:
-          NODE_ENV: test
-          SESSION_SECRET: test-session-secret-at-least-32-chars-long
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+      - name: 🗄️ Generate Prisma Client & Migrate Test DB
+        run: npx prisma db push --skip-generate
+
+      - name: 🧪 Unit & Security Verification Tests
+        run: npx vitest run tests/financial-calculator.test.ts tests/timeline-scheduler.test.ts tests/ai-prompt-injection.test.ts tests/ai-architect-schemas.test.ts tests/health-and-security.test.ts
 
       - name: 🏗️ Production Next.js Build
-        run: npm run build
+        run: npx next build
         env:
           NEXT_TELEMETRY_DISABLED: 1
           NODE_ENV: production
-
