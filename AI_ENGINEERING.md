@@ -85,3 +85,4 @@ Located at [src/lib/ai/deterministic-fallback.ts](file:///e:/Celebria_Event_Plan
 - Outdoor weather contingency detection.
 
 This allows tests in CI pipelines and offline competition evaluations to run deterministically with zero API keys required.
+

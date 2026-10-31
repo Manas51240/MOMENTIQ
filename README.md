@@ -220,3 +220,4 @@ Celebria_Event_Planner/
 ## 📜 License & Acknowledgements
 Developed for the **II2S Challenge 5: Celebration & Event Planner**.  
 Architected, implemented, and verified to production standards.
+

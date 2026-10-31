@@ -125,3 +125,4 @@ In `GuestService.listGuests`:
 - When accessed by a `VIEWER`, PII is masked:
   - `bruce.wayne@wayneenterprises.com` &rarr; `br***@wayneenterprises.com`
   - `+1-555-888-0001` &rarr; `+1-****01`
+

@@ -18,6 +18,7 @@ export function EventNavTabs({ eventId }: EventNavTabsProps) {
     { label: 'Timeline & Tasks', href: `/events/${eventId}/timeline` },
     { label: 'Vendors & Quotes', href: `/events/${eventId}/vendors` },
     { label: 'Guests & Seating', href: `/events/${eventId}/guests` },
+    { label: 'Creative Studio', href: `/events/${eventId}/creative-studio` },
     { label: 'Risk Register', href: `/events/${eventId}/risks` },
     { label: 'Collaborators', href: `/events/${eventId}/collaborators` },
   ];
@@ -47,3 +48,4 @@ export function EventNavTabs({ eventId }: EventNavTabsProps) {
     </nav>
   );
 }
+

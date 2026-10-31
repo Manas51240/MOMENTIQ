@@ -292,3 +292,4 @@
 ### `GET /api/health`
 - **Auth**: Public
 - **Response**: `200 OK` with database connection check, memory utilization, environment status, and crypto check.
+

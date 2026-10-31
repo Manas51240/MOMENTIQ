@@ -372,7 +372,7 @@ CREATE INDEX "AiFeedback_generationId_idx" ON "AiFeedback"("generationId");
 CREATE TABLE "Notification" (
     "id" TEXT PRIMARY KEY,
     "eventId" TEXT NOT NULL REFERENCES "Event"("id") ON DELETE CASCADE,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL REFERENCES "User"("id") ON DELETE CASCADE,
     "title" TEXT NOT NULL,
     "message" TEXT NOT NULL,
     "read" BOOLEAN DEFAULT false NOT NULL,
@@ -380,4 +380,23 @@ CREATE TABLE "Notification" (
 );
 CREATE INDEX "Notification_eventId_idx" ON "Notification"("eventId");
 CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
+
+CREATE TABLE "CreativeAsset" (
+    "id" TEXT PRIMARY KEY,
+    "eventId" TEXT NOT NULL REFERENCES "Event"("id") ON DELETE CASCADE,
+    "category" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "contentJson" TEXT NOT NULL,
+    "prompt" TEXT DEFAULT '' NOT NULL,
+    "notes" TEXT,
+    "isApproved" BOOLEAN DEFAULT false NOT NULL,
+    "version" INTEGER DEFAULT 1 NOT NULL,
+    "createdById" TEXT,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+CREATE INDEX "CreativeAsset_eventId_idx" ON "CreativeAsset"("eventId");
+CREATE INDEX "CreativeAsset_category_idx" ON "CreativeAsset"("category");
+CREATE INDEX "CreativeAsset_isApproved_idx" ON "CreativeAsset"("isApproved");
+
 

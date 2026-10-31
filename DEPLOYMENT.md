@@ -148,3 +148,4 @@ CELEBRA exposes a zero-auth health diagnostics probe at `/api/health`.
   }
 }
 ```
+

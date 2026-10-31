@@ -194,3 +194,4 @@ describe('Risk Register, 5x5 RAG Matrix & Contingency Planning Suite', () => {
     ).rejects.toThrow(/Access denied|Forbidden/);
   });
 });
+

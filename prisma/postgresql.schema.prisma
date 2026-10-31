@@ -159,6 +159,7 @@ model Event {
   documents    UploadedDocument[]
   aiGenerations AiGeneration[]
   notifications Notification[]
+  creativeAssets CreativeAsset[]
 
   @@index([ownerId])
   @@index([status])
@@ -590,5 +591,26 @@ model Notification {
 
   @@index([eventId])
   @@index([userId])
+}
+
+model CreativeAsset {
+  id          String   @id @default(uuid())
+  eventId     String
+  category    String
+  title       String
+  contentJson String
+  prompt      String   @default("")
+  notes       String?
+  isApproved  Boolean  @default(false)
+  version     Int      @default(1)
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([category])
+  @@index([isApproved])
 }
 

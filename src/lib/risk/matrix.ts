@@ -155,3 +155,4 @@ export function getDefaultRisksForEvent(eventType: string, venue: string): Array
 
   return base;
 }
+

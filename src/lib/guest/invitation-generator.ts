@@ -154,3 +154,4 @@ export function evaluateInvitationDelivery(channel: 'EMAIL' | 'SMS' | 'WHATSAPP'
     details: 'No third-party messaging gateway configured. Unique tokenized link generated for manual distribution.',
   };
 }
+

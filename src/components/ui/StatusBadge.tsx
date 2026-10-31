@@ -82,3 +82,4 @@ export function StatusBadge({ label, variant, className = '' }: StatusBadgeProps
     </span>
   );
 }
+

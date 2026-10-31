@@ -138,3 +138,4 @@ Specifications in `e2e/workflow.spec.ts`:
 2. **Authentication Flow**: Full user registration, dashboard redirect, sign out, and re-authentication.
 3. **Event Wizard Lifecycle**: Multi-step celebration creation with $45,000 budget and 175 guests.
 4. **Guest Manifest & Check-In**: Guest registration, invitation link retrieval, and door check-in toggle.
+

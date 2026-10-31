@@ -142,3 +142,4 @@ erDiagram
   - `status`: `IDENTIFIED`, `MITIGATED`, `ACCEPTED`, `CLOSED`
 - **ActivityLog**:
   - Immutable audit trail recording `eventId`, `userId`, `action`, `entityType`, `entityId`, and `detailsJson`.
+
