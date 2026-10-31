@@ -21,6 +21,7 @@ export function EventNavTabs({ eventId }: EventNavTabsProps) {
     { label: 'Creative Studio', href: `/events/${eventId}/creative-studio` },
     { label: 'Risk Register', href: `/events/${eventId}/risks` },
     { label: 'Collaborators', href: `/events/${eventId}/collaborators` },
+    { label: 'Reports & Exports', href: `/events/${eventId}/reports` },
   ];
 
   return (

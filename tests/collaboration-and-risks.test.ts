@@ -158,7 +158,7 @@ describe('Risk Management & Team Collaboration Module Suite', () => {
       for (const r of risks) {
         expect(r.mitigation.length).toBeGreaterThan(0);
         expect(r.contingency.length).toBeGreaterThan(0);
-        expect(r.ownerName.length).toBeGreaterThan(0);
+        expect(r.ownerName?.length).toBeGreaterThan(0);
         expect(r.reviewDate).toBeDefined();
       }
     });

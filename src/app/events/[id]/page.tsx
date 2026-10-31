@@ -352,6 +352,19 @@ export default function EventOverviewPage({
                 5x5 ISO 31000 RAG matrix, outdoor weather contingencies, and emergency protocols.
               </p>
             </Link>
+
+            <Link
+              href={`/events/${id}/reports`}
+              className="bg-white p-6 rounded-2xl border border-stone-300 shadow-sm hover:border-amber-500 hover:shadow-md transition-all space-y-2"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-lg">
+                📊
+              </div>
+              <h3 className="font-bold text-stone-900">Reports & Blueprint Exports</h3>
+              <p className="text-xs text-stone-600">
+                8 dedicated reports, professional vector PDF & RFC 4180 CSV exports with audit integrity.
+              </p>
+            </Link>
           </div>
         </div>
       </main>
