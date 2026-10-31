@@ -7,6 +7,8 @@ import {
   buildQuoteComparisonMatrix,
   VendorStatus,
 } from '@/lib/vendor/workflow';
+import { validateStorageKey } from '@/lib/security/file-security';
+import { detectPromptInjection } from '@/lib/ai/sanitizer';
 import { z } from 'zod';
 import crypto from 'crypto';
 
@@ -265,6 +267,21 @@ export class VendorService {
     await authorizeEventAccess(userId, eventId, 'VENDOR_MANAGE');
     const parsed = addQuoteSchema.parse(data);
 
+    // 1. Defend against path traversal and MIME spoofing in storage keys
+    if (parsed.documentStorageKey) {
+      const storageCheck = validateStorageKey(parsed.documentStorageKey, eventId);
+      if (!storageCheck.isValid) {
+        throw new Error(`File storage security violation: ${storageCheck.error}`);
+      }
+    }
+
+    // 2. Defend against adversarial prompt injection inside quotation details
+    const textToCheck = `${parsed.details} ${parsed.servicesIncluded || ''} ${parsed.contractConditions || ''}`;
+    const injectionCheck = detectPromptInjection(textToCheck);
+    if (injectionCheck.isMalicious) {
+      throw new Error(`Malicious prompt injection detected in quotation: ${injectionCheck.reasons.join(', ')}`);
+    }
+
     const vendor = await db.vendor.findFirst({
       where: { id: vendorId, eventId },
     });
@@ -329,6 +346,21 @@ export class VendorService {
   ) {
     await authorizeEventAccess(userId, eventId, 'VENDOR_MANAGE');
     const parsed = confirmBookingSchema.parse(data);
+
+    // Defend against path traversal in contract storage key
+    if (parsed.contractStorageKey) {
+      const storageCheck = validateStorageKey(parsed.contractStorageKey, eventId);
+      if (!storageCheck.isValid) {
+        throw new Error(`File storage security violation: ${storageCheck.error}`);
+      }
+    }
+
+    if (parsed.notes) {
+      const injectionCheck = detectPromptInjection(parsed.notes);
+      if (injectionCheck.isMalicious) {
+        throw new Error(`Malicious prompt injection detected in booking notes: ${injectionCheck.reasons.join(', ')}`);
+      }
+    }
 
     const vendor = await db.vendor.findFirst({
       where: { id: vendorId, eventId },

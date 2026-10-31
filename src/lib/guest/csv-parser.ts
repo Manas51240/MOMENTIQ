@@ -3,6 +3,8 @@
 // ASVS Level 2: Strict Input Validation, Duplicate Detection & Safe Error Reporting
 // ==============================================================================
 
+import { stripInvisibleCharacters, detectPromptInjection } from '@/lib/ai/sanitizer';
+
 export interface ParsedGuestRow {
   name: string;
   email?: string;
@@ -143,8 +145,37 @@ export function parseGuestListCsv(csvText: string): CsvParseResult {
 
     const phone = phoneIndex !== -1 ? cells[phoneIndex]?.trim() : undefined;
     const groupName = groupIndex !== -1 ? cells[groupIndex]?.trim() : undefined;
-    const dietaryRequirements = dietaryIndex !== -1 ? cells[dietaryIndex]?.trim() : undefined;
-    const accessibilityNotes = accessibilityIndex !== -1 ? cells[accessibilityIndex]?.trim() : undefined;
+    let dietaryRequirements = dietaryIndex !== -1 ? cells[dietaryIndex]?.trim() : undefined;
+    let accessibilityNotes = accessibilityIndex !== -1 ? cells[accessibilityIndex]?.trim() : undefined;
+
+    // Sanitize invisible characters & defend against prompt injection inside notes
+    if (dietaryRequirements) {
+      dietaryRequirements = stripInvisibleCharacters(dietaryRequirements);
+      const injCheck = detectPromptInjection(dietaryRequirements);
+      if (injCheck.isMalicious) {
+        errors.push({
+          rowNumber,
+          field: 'dietaryRequirements',
+          message: `Malicious prompt injection intercepted in dietary notes: ${injCheck.reasons.join(', ')}`,
+          rawRow: rawLine,
+        });
+        continue;
+      }
+    }
+
+    if (accessibilityNotes) {
+      accessibilityNotes = stripInvisibleCharacters(accessibilityNotes);
+      const injCheck = detectPromptInjection(accessibilityNotes);
+      if (injCheck.isMalicious) {
+        errors.push({
+          rowNumber,
+          field: 'accessibilityNotes',
+          message: `Malicious prompt injection intercepted in accessibility notes: ${injCheck.reasons.join(', ')}`,
+          rawRow: rawLine,
+        });
+        continue;
+      }
+    }
 
     let attendingCount = 1;
     if (countIndex !== -1 && cells[countIndex]) {

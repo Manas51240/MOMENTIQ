@@ -56,6 +56,18 @@ export function formatSafeErrorResponse(
       message = 'Request validation failed';
       code = 'VALIDATION_ERROR';
       status = 400;
+    } else if (error instanceof SyntaxError || error.message.includes('JSON') || error.message.includes('Unexpected token')) {
+      message = 'Malformed request payload';
+      code = 'MALFORMED_PAYLOAD';
+      status = 400;
+    } else if (error.message.includes('File storage security violation') || error.message.includes('Path traversal')) {
+      message = error.message;
+      code = 'SECURITY_POLICY_VIOLATION';
+      status = 400;
+    } else if (error.message.includes('Malicious prompt injection')) {
+      message = error.message;
+      code = 'PROMPT_INJECTION_DETECTED';
+      status = 400;
     } else if (error.message.includes('Unauthorized') || error.message.includes('Authentication required')) {
       message = 'Authentication required';
       code = 'UNAUTHORIZED';

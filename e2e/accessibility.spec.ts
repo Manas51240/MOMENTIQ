@@ -53,3 +53,4 @@ test.describe('CELEBRA WCAG 2.2 AA Automated Accessibility Audit', () => {
     expect(wizardScan.violations).toEqual([]);
   });
 });
+

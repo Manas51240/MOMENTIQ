@@ -57,6 +57,27 @@ export async function authenticateRequest(req: Request | NextRequest): Promise<A
     throw new Error('Authentication required: No session token provided');
   }
 
+  // 3. CSRF Defense: For cookie-based state-modifying requests, verify Origin matches Host
+  const isCookieAuth = !authHeader && !!token;
+  const method = req.method ? req.method.toUpperCase() : 'GET';
+  const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
+  if (isCookieAuth && isMutation) {
+    const origin = req.headers.get('origin');
+    const host = req.headers.get('host');
+    if (origin && host) {
+      try {
+        const originUrl = new URL(origin);
+        if (originUrl.host !== host) {
+          throw new Error('Forbidden: Cross-Site Request Forgery (CSRF) detected from untrusted origin');
+        }
+      } catch (e: unknown) {
+        if (e instanceof Error && e.message.includes('CSRF')) {
+          throw e;
+        }
+      }
+    }
+  }
+
   // Cryptographic signature & expiry verification
   const verification = verifySessionToken(token);
   if (!verification.valid || !verification.sessionId) {

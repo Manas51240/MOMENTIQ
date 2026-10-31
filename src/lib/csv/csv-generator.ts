@@ -9,7 +9,8 @@ export interface CsvColumn<T> {
 }
 
 /**
- * Escapes a single CSV cell according to RFC 4180:
+ * Escapes a single CSV cell according to RFC 4180 and defenses against CSV Formula Injection:
+ * - If the field begins with =, +, -, @, \t, or \r (formula triggers in Excel/Sheets), prepend with '
  * - If the field contains comma, double-quote, or newline, enclose in double quotes.
  * - Double quotes inside the field must be escaped by preceding them with another double quote ("").
  */
@@ -18,7 +19,12 @@ export function escapeCsvField(value: string | number | boolean | null | undefin
     return '';
   }
 
-  const str = String(value);
+  let str = String(value);
+
+  // CSV Formula Injection Defense: neutralize spreadsheet formula execution triggers
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = `'${str}`;
+  }
 
   // Check if string contains comma, quote, or newline
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {

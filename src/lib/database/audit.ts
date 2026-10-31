@@ -14,11 +14,51 @@ export interface LogActivityParams {
   details?: Record<string, unknown>;
 }
 
+const SENSITIVE_KEYS = new Set([
+  'password',
+  'passwordhash',
+  'salt',
+  'token',
+  'sessiontoken',
+  'secret',
+  'authorization',
+  'creditcard',
+  'cvv',
+  'apikey',
+  'key',
+]);
+
+/**
+ * Recursively redacts sensitive fields from audit log payloads.
+ */
+export function redactSensitiveData(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj !== 'object') return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map(redactSensitiveData);
+  }
+
+  const sanitized: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+    const lowerKey = k.toLowerCase().replace(/[^a-z]/g, '');
+    if (SENSITIVE_KEYS.has(lowerKey)) {
+      sanitized[k] = '[REDACTED]';
+    } else if (typeof v === 'object' && v !== null) {
+      sanitized[k] = redactSensitiveData(v);
+    } else {
+      sanitized[k] = v;
+    }
+  }
+  return sanitized;
+}
+
 /**
  * Persists an immutable activity log record to the database.
  */
 export async function logActivity(params: LogActivityParams): Promise<void> {
   try {
+    const sanitizedDetails = params.details ? redactSensitiveData(params.details) : null;
     await db.activityLog.create({
       data: {
         eventId: params.eventId,
@@ -26,7 +66,7 @@ export async function logActivity(params: LogActivityParams): Promise<void> {
         action: params.action,
         entityType: params.entityType,
         entityId: params.entityId,
-        detailsJson: params.details ? JSON.stringify(params.details) : null,
+        detailsJson: sanitizedDetails ? JSON.stringify(sanitizedDetails) : null,
       },
     });
   } catch (error) {

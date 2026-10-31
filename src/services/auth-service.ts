@@ -90,6 +90,13 @@ export class AuthService {
 
     // 2. Validate input
     const parsed = loginSchema.parse(data);
+    const normalizedEmail = parsed.email.toLowerCase();
+
+    // 2b. Account-level brute-force defense (prevents IP-rotation / X-Forwarded-For spoofing bypass)
+    const acctRateCheck = authRateLimiter.check(`login_acct_${normalizedEmail}`);
+    if (!acctRateCheck.allowed) {
+      throw new Error('Rate limit exceeded: Too many login attempts for this account. Please try again later.');
+    }
 
     // 3. Lookup user
     const user = await db.user.findUnique({
