@@ -30,3 +30,4 @@ This document records the architectural optimizations, benchmarks, code-splittin
 
 ### 2.3 Fault-Tolerant AI Synthesis Caching
 - **Deterministic Offline Fallback**: Dual-engine architecture guarantees zero downtime if external AI providers experience network jitter or rate limits.
+

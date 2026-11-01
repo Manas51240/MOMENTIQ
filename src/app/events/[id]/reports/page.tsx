@@ -117,8 +117,8 @@ interface ReportMeta {
 interface ReportPayload {
   type?: string;
   metadata?: { title: string; description: string };
-  event?: { id?: string; title?: string; currency?: string; preferences?: { theme?: string; tone?: string; dietaryNotes?: string; [key: string]: any }; [key: string]: any };
-  preferences?: { theme?: string; tone?: string; dietaryNotes?: string; [key: string]: any };
+  event?: { id?: string; title?: string; currency?: string; preferences?: { theme?: string; tone?: string; dietaryNotes?: string; [key: string]: unknown }; [key: string]: unknown };
+  preferences?: { theme?: string; tone?: string; dietaryNotes?: string; [key: string]: unknown };
   summary?: {
     totalBudgetMinor?: number | string;
     totalSpentMinor?: number | string;
@@ -139,17 +139,35 @@ interface ReportPayload {
     completedMilestones?: number;
     totalTasks?: number;
     completedTasks?: number;
+    overdueTasks?: number;
+    completionPercent?: number;
     progressPercent?: number;
     totalVendors?: number;
     confirmedVendors?: number;
     totalContractValueMinor?: number | string;
     totalPaidMinor?: number | string;
+    totalDisbursedMinor?: number | string;
+    totalRefundedMinor?: number | string;
+    netDisbursedMinor?: number | string;
+    pendingDueMinor?: number | string;
     actualAttendingHeads?: number;
     targetGuests?: number;
     actualCheckedInHeads?: number;
     taskCompletionPercent?: number;
     allRisksResolved?: boolean;
-    [key: string]: any;
+    [key: string]: unknown;
+  };
+  operationalSummary?: {
+    plannedBudgetMinor?: string;
+    actualSpentMinor?: string;
+    budgetVarianceMinor?: string;
+    targetGuests?: number;
+    actualAttendingHeads?: number;
+    actualCheckedInHeads?: number;
+    taskCompletionPercent?: number;
+    allTasksCompleted?: boolean;
+    allRisksResolved?: boolean;
+    totalRisksHandled?: number;
   };
   categories?: ReportCategory[];
   expenses?: ReportExpense[];
@@ -163,7 +181,7 @@ interface ReportPayload {
   risks?: ReportRisk[];
   payments?: ReportPayment[];
   currency?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export default function EventReportsPage({

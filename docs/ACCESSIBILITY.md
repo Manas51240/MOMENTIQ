@@ -37,3 +37,4 @@ This document certifies that MOMENTIQ has been designed and implemented in stric
 
 ### 2.3 High Contrast & Dark Mode Ergonomics
 - Amber accent palette `#78350f` (amber-900) and stone `#1c1917` (stone-900) ensure AAA compliance across all light surfaces.
+

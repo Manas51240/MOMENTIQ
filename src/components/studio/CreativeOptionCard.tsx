@@ -60,6 +60,38 @@ interface ShotMoment {
   priority: string;
 }
 
+interface CreativeCardContent {
+  moodDescription?: string;
+  colors?: ColorSwatch[];
+  pairingRules?: string[];
+  svgVisualPreview?: string;
+  aestheticStyle?: string;
+  lightingVibe?: string;
+  focalElements?: string[];
+  hostHeader?: string;
+  eventHeadline?: string;
+  invitationBody?: string;
+  dateTimeVenueNotice?: string;
+  dressCodeNote?: string;
+  rsvpNotice?: string;
+  poeticVersion?: string;
+  casualVersion?: string;
+  cuisineStyle?: string;
+  dietaryCoverage?: string;
+  appetizers?: AppetizerItem[];
+  signatureCocktailOrMocktail?: { name?: string; description?: string; ingredients?: string };
+  dessertHighlight?: string;
+  estimatedPerUnitCostMinor?: number;
+  totalEstimatedCostMinor?: number;
+  giftConcept?: string;
+  packagingStyle?: string;
+  culturalSignificance?: string;
+  ecoFriendlyAlternative?: string;
+  shots?: ShotMoment[];
+  equipmentRequirements?: string[];
+  [key: string]: unknown;
+}
+
 export function CreativeOptionCard({
   option,
   category,
@@ -68,7 +100,7 @@ export function CreativeOptionCard({
   onCopyText,
   copiedId,
 }: CreativeOptionCardProps) {
-  const content = option.content as Record<string, any>;
+  const content = option.content as CreativeCardContent;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col justify-between">
@@ -179,14 +211,14 @@ export function CreativeOptionCard({
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => onCopyText(content.poeticVersion, 'poetic-btn')}
+                onClick={() => onCopyText(content.poeticVersion || '', 'poetic-btn')}
                 className="text-xs flex-1 py-1.5 px-3 bg-stone-100 hover:bg-stone-200 rounded-lg font-semibold text-stone-700"
               >
                 {copiedId === 'poetic-btn' ? '✓ Copied Poetic' : 'Copy Poetic Rhyme'}
               </button>
               <button
                 type="button"
-                onClick={() => onCopyText(content.casualVersion, 'casual-btn')}
+                onClick={() => onCopyText(content.casualVersion || '', 'casual-btn')}
                 className="text-xs flex-1 py-1.5 px-3 bg-stone-100 hover:bg-stone-200 rounded-lg font-semibold text-stone-700"
               >
                 {copiedId === 'casual-btn' ? '✓ Copied Casual' : 'Copy Casual Text'}

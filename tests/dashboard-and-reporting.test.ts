@@ -17,8 +17,8 @@ describe('CELEBRA Dashboard & Reporting System Suite', () => {
   let userA: Awaited<ReturnType<typeof AuthService.register>>;
   let userB: Awaited<ReturnType<typeof AuthService.register>>;
   let viewerUser: Awaited<ReturnType<typeof AuthService.register>>;
-  let eventA: any;
-  let eventB: any;
+  let eventA: Awaited<ReturnType<typeof EventService.createEvent>>;
+  let eventB: Awaited<ReturnType<typeof EventService.createEvent>>;
 
   beforeAll(async () => {
     const timestamp = Date.now();

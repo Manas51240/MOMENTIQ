@@ -18,14 +18,14 @@ import { detectCircularDependency } from '@/lib/timeline/scheduler';
 describe('CELEBRA Independent QA & Engineering Audit Suite', () => {
   let tenantAlpha: Awaited<ReturnType<typeof AuthService.register>>;
   let tenantBeta: Awaited<ReturnType<typeof AuthService.register>>;
-  let eventAlpha: any;
-  let eventBeta: any;
-  let alphaCateringCat: any;
-  let alphaExpense: any;
-  let alphaVendor: any;
-  let alphaGuest: any;
-  let alphaTask: any;
-  let alphaRisk: any;
+  let eventAlpha: Awaited<ReturnType<typeof EventService.createEvent>>;
+  let eventBeta: Awaited<ReturnType<typeof EventService.createEvent>>;
+  let alphaCateringCat: Awaited<ReturnType<typeof db.budgetCategory.create>>;
+  let alphaExpense: Awaited<ReturnType<typeof BudgetService.createExpense>>;
+  let alphaVendor: Awaited<ReturnType<typeof VendorService.registerVendor>>;
+  let alphaGuest: Awaited<ReturnType<typeof GuestService.addGuest>>;
+  let alphaTask: Awaited<ReturnType<typeof TimelineService.createTask>>;
+  let alphaRisk: Awaited<ReturnType<typeof RiskService.createRisk>>;
 
   beforeAll(async () => {
     const timestamp = Date.now();

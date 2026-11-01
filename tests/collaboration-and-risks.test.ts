@@ -129,7 +129,7 @@ describe('Risk Management & Team Collaboration Module Suite', () => {
       expect(risk.probability).toBe(3);
       expect(risk.impact).toBe(4);
       expect(risk.riskScore).toBe(12); // 3 * 4 = 12
-      expect((risk.severity as any).rating).toBe('MEDIUM'); // 8-14 is MEDIUM
+      expect(typeof risk.severity === 'object' && risk.severity !== null ? (risk.severity as { rating: string }).rating : risk.severity).toBe('MEDIUM'); // 8-14 is MEDIUM
       expect(risk.mitigation).toContain('Perform electrical load test');
       expect(risk.contingency).toContain('Secondary 25kW silent diesel generator');
       expect(risk.ownerName).toBe('Audio-Visual Lead');
@@ -149,7 +149,7 @@ describe('Risk Management & Team Collaboration Module Suite', () => {
       const risks = listResult.risks;
 
       // Verify all 11 domains exist in the seeded risks
-      const categoriesFound = new Set(risks.map((r: any) => r.category));
+      const categoriesFound = new Set(risks.map((r: { category: string }) => r.category));
       for (const mandatoryCategory of MANDATORY_RISK_CATEGORIES) {
         expect(categoriesFound.has(mandatoryCategory)).toBe(true);
       }

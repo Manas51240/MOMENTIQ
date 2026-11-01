@@ -172,7 +172,7 @@ export default function AiArchitectPage({
 
     try {
       // Parse modified edits back into structured plan
-      const parsedPlan: Record<string, any> = {};
+      const parsedPlan: Record<string, unknown> = {};
       for (const [key, text] of Object.entries(editableContent)) {
         try {
           parsedPlan[key] = JSON.parse(text);

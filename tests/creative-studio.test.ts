@@ -117,13 +117,13 @@ describe('AI Creative Studio & Personalized Event Creativity Suite', () => {
       generateComparison: true,
     });
 
-    const contentA = result.optionA.content as any;
-    const contentB = result.optionB?.content as any;
+    const contentA = result.optionA.content as Record<string, unknown>;
+    const contentB = result.optionB?.content as Record<string, unknown>;
 
     expect(result.category).toBe('COLOR_PALETTE');
     expect(result.optionA).toBeDefined();
     expect(result.optionA.title).toContain('COLOR PALETTE');
-    expect(contentA.colors.length).toBeGreaterThanOrEqual(3);
+    expect(Array.isArray(contentA.colors) ? contentA.colors.length : 0).toBeGreaterThanOrEqual(3);
 
     expect(result.optionB).toBeDefined();
     expect(result.optionB?.styleVariant).toContain('Bold Direction');
@@ -136,13 +136,13 @@ describe('AI Creative Studio & Personalized Event Creativity Suite', () => {
       tone: 'ELEGANT',
     });
 
-    const content = moodboardResult.optionA.content as any;
+    const content = moodboardResult.optionA.content as Record<string, unknown>;
     expect(content.truthInGenerationDisclaimer).toBe(
       'AI Generated Concept Moodboard — Not vendor portfolio photograph'
     );
     expect(content.providerStatus).toBe('PROVIDER_UNCONFIGURED_DETERMINISTIC_PALETTE');
     expect(content.imageUrl).toBeNull(); // Truthful: Never claims unverified photo URLs
-    expect(content.svgVisualPreview).toContain('<svg');
+    expect(typeof content.svgVisualPreview === 'string' && content.svgVisualPreview.includes('<svg')).toBe(true);
     expect(content.svgVisualPreview).toContain('AI Generated Concept Moodboard — Not vendor portfolio photograph');
   });
 
@@ -173,7 +173,7 @@ describe('AI Creative Studio & Personalized Event Creativity Suite', () => {
     expect(saved.title).toBe('Official Grand Gala Color Palette');
     expect(saved.isApproved).toBe(true);
     expect(saved.version).toBe(1);
-    expect((saved.content as any).paletteName).toBe('Sapphire & Champagne Rose');
+    expect((saved.content as Record<string, unknown>).paletteName).toBe('Sapphire & Champagne Rose');
 
     // Verify in database
     const inDb = await db.creativeAsset.findUnique({ where: { id: saved.id } });

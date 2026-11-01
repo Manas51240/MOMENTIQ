@@ -14,6 +14,7 @@
 **Demo Credentials:** `demo@momentiq.com` / `Password123!`  
 **GitHub Repository:** [https://github.com/Manas51240/MOMENTIQ](https://github.com/Manas51240/MOMENTIQ)  
 **Verified Scorecard:** [SCORECARD.md](SCORECARD.md) (Composite: **99.8/100**)  
+**Code Quality Dossier:** [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)  
 **Architecture Spec:** [ARCHITECTURE.md](ARCHITECTURE.md)  
 **Security Model:** [SECURITY.md](SECURITY.md)  
 **Accessibility Dossier:** [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md)  
