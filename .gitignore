@@ -39,3 +39,7 @@ Thumbs.db
 .env*
 
 .env*
+
+*.mp4
+*.webm
+video_output/
