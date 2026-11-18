@@ -139,9 +139,18 @@ export default function TimelinePage({
       const res = await fetch(`/api/events/${id}/timeline/generate`, {
         method: 'POST',
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to regenerate timeline');
+      const text = await res.text();
+      let data: any = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        throw new Error(`Server returned status ${res.status}: ${text ? text.slice(0, 100) : 'Empty response'}`);
+      }
+      if (!res.ok || !data?.success) {
+        const errorMsg = typeof data?.error === 'string'
+          ? data.error
+          : data?.error?.message || data?.message || 'Failed to regenerate timeline';
+        throw new Error(errorMsg);
       }
 
       setAlertInfo({

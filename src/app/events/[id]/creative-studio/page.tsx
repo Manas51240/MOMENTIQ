@@ -90,9 +90,19 @@ export default function CreativeStudioPage({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error?.message || data.message || 'Generation failed');
+      const text = await res.text();
+      let data: any = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        throw new Error(`Server returned status ${res.status}: ${text ? text.slice(0, 120) : 'Empty response'}`);
+      }
+
+      if (!res.ok || !data?.success) {
+        const errorMsg = typeof data?.error === 'string'
+          ? data.error
+          : data?.error?.message || data?.message || 'Generation failed';
+        throw new Error(errorMsg);
       }
 
       setGeneratedResult(data);

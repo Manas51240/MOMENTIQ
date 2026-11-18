@@ -3,6 +3,9 @@ import { authenticateRequest } from '@/lib/security/auth-middleware';
 import { RiskService } from '@/services/risk-service';
 import { formatSafeErrorResponse } from '@/lib/security/error-sanitizer';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

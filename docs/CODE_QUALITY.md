@@ -76,3 +76,4 @@ MOMENTIQ executes a comprehensive GitHub Actions CI/CD pipeline on every push an
 4. **Database Migration & Seeding**: `prisma db push`
 5. **Security & Financial Test Suite**: Vitest suite covering OWASP red-team tests, financial drift tests, and DAG scheduler tests
 6. **Production Compilation**: `next build` with zero telemetry
+

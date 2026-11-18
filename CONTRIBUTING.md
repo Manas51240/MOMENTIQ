@@ -47,3 +47,4 @@ All contributions must adhere to the highest engineering and code quality standa
    ```
 4. Push to your branch: `git push origin feature/amazing-feature`.
 5. Open a Pull Request with a clear description of changes.
+

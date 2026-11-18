@@ -52,8 +52,15 @@ export default function AiArchitectPage({
           fetch(`/api/events/${id}/ai-architect`),
         ]);
 
-        const evtData = await evtRes.json();
-        if (evtData.success && evtData.event) {
+        const evtText = await evtRes.text();
+        let evtData: { success?: boolean; event?: any } | null = null;
+        try {
+          evtData = evtText ? JSON.parse(evtText) : null;
+        } catch {
+          evtData = null;
+        }
+
+        if (evtData?.success && evtData.event) {
           setEvent(evtData.event);
           if (evtData.event.venue?.toLowerCase().includes('garden') || evtData.event.venue?.toLowerCase().includes('outdoor')) {
             setIndoorOutdoor('OUTDOOR');
@@ -62,11 +69,18 @@ export default function AiArchitectPage({
           }
         }
 
-        const planData = await planRes.json().catch(() => null);
-        if (planData && planData.success && planData.plan) {
+        const planText = await planRes.text();
+        let planData: { success?: boolean; plan?: any } | null = null;
+        try {
+          planData = planText ? JSON.parse(planText) : null;
+        } catch {
+          planData = null;
+        }
+
+        if (planData?.success && planData.plan) {
           setPlan(planData.plan);
           setGenerationId(planData.plan.id || null);
-          initializeEditable(planData.plan.structuredPlan);
+          initializeEditable(planData.plan.structuredPlan || planData.plan);
         }
       } catch (err: unknown) {
         setAlertInfo({
@@ -105,14 +119,26 @@ export default function AiArchitectPage({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to generate master event plan');
+      const text = await res.text();
+      let data: { success?: boolean; plan?: any; generationId?: string; error?: string | { message?: string } } | null = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        throw new Error(`Server returned status ${res.status}: ${text ? text.slice(0, 120) : 'Empty response'}`);
       }
 
-      setPlan(data.plan);
-      setGenerationId(data.plan.id || null);
-      initializeEditable(data.plan.structuredPlan);
+      if (!res.ok || !data?.success) {
+        const errorMsg = typeof data?.error === 'string'
+          ? data.error
+          : data?.error?.message || 'Failed to generate master event plan';
+        throw new Error(errorMsg);
+      }
+
+      const rawPlan = data.plan;
+      const structured = rawPlan?.structuredPlan || rawPlan;
+      setPlan(rawPlan);
+      setGenerationId(rawPlan?.id || data.generationId || null);
+      initializeEditable(structured);
       setAlertInfo({
         type: 'success',
         message: 'Master event plan generated successfully across all 12 dimensions!',
@@ -141,9 +167,19 @@ export default function AiArchitectPage({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || `Failed to regenerate ${sectionKey}`);
+      const text = await res.text();
+      let data: { success?: boolean; sectionContent?: any; error?: string | { message?: string } } | null = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        throw new Error(`Server returned status ${res.status}: ${text ? text.slice(0, 120) : 'Empty response'}`);
+      }
+
+      if (!res.ok || !data?.success) {
+        const errorMsg = typeof data?.error === 'string'
+          ? data.error
+          : data?.error?.message || `Failed to regenerate ${sectionKey}`;
+        throw new Error(errorMsg);
       }
 
       const updatedVal = data.sectionContent;
@@ -190,10 +226,25 @@ export default function AiArchitectPage({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to commit approved plan');
+      const text = await res.text();
+      let data: { success?: boolean; error?: string | { message?: string } } | null = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        throw new Error(`Server returned status ${res.status}: ${text ? text.slice(0, 120) : 'Empty response'}`);
       }
+
+      if (!res.ok || !data?.success) {
+        const errorMsg = typeof data?.error === 'string'
+          ? data.error
+          : data?.error?.message || 'Failed to commit approved plan';
+        throw new Error(errorMsg);
+      }
+
+      setAlertInfo({
+        type: 'success',
+        message: 'Plan approved and integrated into your budget, timeline, and risk register!',
+      });
 
       setAlertInfo({
         type: 'success',

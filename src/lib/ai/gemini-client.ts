@@ -20,8 +20,27 @@ import {
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_MODEL = 'gemini-2.5-flash';
-const REQUEST_TIMEOUT_MS = 45000;
-const MAX_RETRIES = 2;
+const REQUEST_TIMEOUT_MS = 8000;
+const MAX_RETRIES = 1;
+
+/**
+ * Extracts and cleans valid JSON substrings from LLM responses, stripping code fences or preambles.
+ */
+export function extractCleanJson(raw: string): string {
+  if (!raw || typeof raw !== 'string') return '{}';
+  let cleaned = raw.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, '');
+    cleaned = cleaned.replace(/\s*```$/i, '');
+  }
+  cleaned = cleaned.trim();
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+  return cleaned;
+}
 
 export interface GeminiExecutionResult<T> {
   data: T;
@@ -108,14 +127,25 @@ async function callGeminiRaw(
         throw new Error(`Gemini API Error (HTTP ${response.status}): ${errorText.slice(0, 300)}`);
       }
 
-      const json = await response.json();
+      const text = await response.text();
+      if (!text || text.trim().length === 0) {
+        throw new Error('Gemini API returned empty response body');
+      }
+
+      let json: { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+      try {
+        json = JSON.parse(text);
+      } catch (parseErr) {
+        throw new Error(`Gemini API returned malformed response JSON: ${(parseErr as Error).message}`);
+      }
+
       const candidateText = json.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      if (!candidateText) {
+      if (!candidateText || candidateText.trim().length === 0) {
         throw new Error('Malformed response from Gemini API: missing candidate text');
       }
 
-      return candidateText;
+      return extractCleanJson(candidateText);
     } catch (err: unknown) {
       clearTimeout(timeoutId);
       lastError = err as Error;
@@ -192,8 +222,9 @@ Provide all 12 sections according to the CELEBRA specification:
 
   try {
     const rawJson = await callGeminiRaw(userPrompt, buildSystemInstruction(), apiKey);
-    // Parse JSON
-    const parsed = JSON.parse(rawJson);
+    // Parse and validate JSON safely with clean extraction
+    const cleaned = extractCleanJson(rawJson);
+    const parsed = JSON.parse(cleaned);
     // Validate with Zod
     const validatedPlan = eventArchitectPlanSchema.parse(parsed);
 
@@ -254,7 +285,8 @@ Ensure the output directly contains these keys without nested parent wrappers.
 
   try {
     const rawJson = await callGeminiRaw(userPrompt, buildSystemInstruction(), apiKey);
-    const parsed = JSON.parse(rawJson);
+    const cleaned = extractCleanJson(rawJson);
+    const parsed = JSON.parse(cleaned);
     const candidateData =
       parsed && typeof parsed === 'object' && sectionName in parsed
         ? (parsed as Record<string, unknown>)[sectionName]

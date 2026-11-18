@@ -9,10 +9,11 @@ import {
   EventContextParams,
   generateDeterministicCreativeAsset,
 } from './creative-fallback';
+import { extractCleanJson } from './gemini-client';
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_MODEL = 'gemini-2.5-flash';
-const REQUEST_TIMEOUT_MS = 25000;
+const REQUEST_TIMEOUT_MS = 6000;
 const PROMPT_VERSION = 'v2.1-creative-studio';
 
 // Abusive/toxic keywords regex to fail-fast before calling external APIs
@@ -107,18 +108,30 @@ async function callGeminiRaw(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`Gemini API error: HTTP ${response.status} ${response.statusText}`);
+      const errorText = await response.text().catch(() => 'Unknown error');
+      throw new Error(`Gemini API error: HTTP ${response.status} ${response.statusText}: ${errorText.slice(0, 200)}`);
     }
 
-    const json = await response.json();
-    const candidate = json.candidates?.[0];
-    const text = candidate?.content?.parts?.[0]?.text;
+    const text = await response.text();
+    if (!text || text.trim().length === 0) {
+      throw new Error('Gemini API returned empty response body');
+    }
 
-    if (!text) {
+    let json: { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+    try {
+      json = JSON.parse(text);
+    } catch (parseErr) {
+      throw new Error(`Gemini API returned invalid JSON: ${(parseErr as Error).message}`);
+    }
+
+    const candidate = json.candidates?.[0];
+    const rawOutput = candidate?.content?.parts?.[0]?.text;
+
+    if (!rawOutput || rawOutput.trim().length === 0) {
       throw new Error('Gemini API returned empty response candidates');
     }
 
-    return text.trim();
+    return extractCleanJson(rawOutput);
   } catch (err) {
     clearTimeout(timeoutId);
     throw err;
@@ -178,13 +191,13 @@ export async function executeCreativeGeneration<T = Record<string, unknown>>(
       const systemPrompt = buildCreativeSystemPrompt(input.category);
       const promptA = buildCreativePrompt(input.category, enrichedContext, 'OPTION_A');
       const rawTextA = await callGeminiRaw(promptA, systemPrompt, apiKey);
-      const parsedA = JSON.parse(rawTextA);
+      const parsedA = JSON.parse(extractCleanJson(rawTextA));
       optionAContent = schema.parse(parsedA);
 
       if (input.generateComparison) {
         const promptB = buildCreativePrompt(input.category, enrichedContext, 'OPTION_B');
         const rawTextB = await callGeminiRaw(promptB, systemPrompt, apiKey);
-        const parsedB = JSON.parse(rawTextB);
+        const parsedB = JSON.parse(extractCleanJson(rawTextB));
         optionBContent = schema.parse(parsedB);
       }
 

@@ -18,18 +18,73 @@ import { z } from 'zod';
 
 export class AiEventArchitectService {
   /**
+   * Helper to merge database event context with partial user input parameters.
+   */
+  private static async buildEnrichedInput(
+    eventId: string,
+    rawInput: unknown
+  ): Promise<z.infer<typeof eventArchitectInputSchema>> {
+    const event = await db.event.findUnique({
+      where: { id: eventId },
+      include: { preferences: true },
+    });
+
+    if (!event) {
+      throw new Error(`Celebration event not found: ${eventId}`);
+    }
+
+    const startMs = new Date(event.startDate).getTime();
+    const endMs = new Date(event.endDate).getTime();
+    const durationHours = Math.max(1, Math.min(72, Math.round((endMs - startMs) / (1000 * 60 * 60)))) || 5;
+
+    const inputObj = (rawInput && typeof rawInput === 'object' ? rawInput : {}) as Record<string, unknown>;
+
+    let culturalPrefs: string[] = [];
+    if (event.preferences?.culturalTraditionsJson) {
+      try {
+        const parsed = JSON.parse(event.preferences.culturalTraditionsJson);
+        culturalPrefs = Array.isArray(parsed) ? parsed : [String(parsed)];
+      } catch {
+        culturalPrefs = [event.preferences.culturalTraditionsJson];
+      }
+    }
+
+    const dietaryPrefs: string[] = event.preferences?.dietaryNotes ? [event.preferences.dietaryNotes] : [];
+
+    const merged = {
+      category: inputObj.category || event.eventType,
+      eventDate: inputObj.eventDate || event.startDate.toISOString(),
+      durationHours: inputObj.durationHours || durationHours,
+      location: inputObj.location || (event.venue ? `${event.venue}, ${event.city}` : event.city || 'Banquet Hall'),
+      budgetMinor: inputObj.budgetMinor ? Number(inputObj.budgetMinor) : Number(event.budgetMinor),
+      currency: inputObj.currency || event.currency || 'INR',
+      guestCount: inputObj.guestCount ? Number(inputObj.guestCount) : event.guestTarget || 100,
+      eventStyle: inputObj.eventStyle || inputObj.style || event.preferences?.tone || 'Festive & Elegant',
+      theme: inputObj.theme || event.preferences?.theme || 'Tailored Celebration',
+      culturalPreferences: Array.isArray(inputObj.culturalPreferences) ? inputObj.culturalPreferences : culturalPrefs,
+      dietaryPreferences: Array.isArray(inputObj.dietaryPreferences) ? inputObj.dietaryPreferences : dietaryPrefs,
+      venuePreferences: inputObj.venuePreferences || event.venue || 'Scenic Ballroom or Hall',
+      indoorOutdoor: inputObj.indoorOutdoor || 'INDOOR',
+      accessibilityRequirements: Array.isArray(inputObj.accessibilityRequirements) ? inputObj.accessibilityRequirements : [],
+      specialInstructions: inputObj.specialInstructions || inputObj.instructions || '',
+    };
+
+    return eventArchitectInputSchema.parse(merged);
+  }
+
+  /**
    * Generates a complete 12-section event plan and records generation telemetry.
    */
   static async generatePlan(
     userId: string,
     eventId: string,
-    input: z.infer<typeof eventArchitectInputSchema>
+    input: unknown
   ) {
     // 1. Authorize: user must have edit permissions on the event
     await authorizeEventAccess(userId, eventId, 'EVENT_EDIT');
 
-    // 2. Validate input schemas
-    const parsedInput = eventArchitectInputSchema.parse(input);
+    // 2. Validate & enrich input schemas
+    const parsedInput = await this.buildEnrichedInput(eventId, input);
 
     // 3. Execute dual-engine AI generation
     const result = await executeAiEventArchitect(parsedInput);
@@ -78,12 +133,12 @@ export class AiEventArchitectService {
   static async regenerateSection(
     userId: string,
     eventId: string,
-    sectionName: PlanSectionName,
-    input: z.infer<typeof eventArchitectInputSchema>
+    sectionName: string,
+    input: unknown
   ) {
     await authorizeEventAccess(userId, eventId, 'EVENT_EDIT');
     const validSectionName = planSectionNameEnum.parse(sectionName);
-    const parsedInput = eventArchitectInputSchema.parse(input);
+    const parsedInput = await this.buildEnrichedInput(eventId, input);
 
     const result = await executeAiSectionRegeneration(validSectionName, parsedInput);
 

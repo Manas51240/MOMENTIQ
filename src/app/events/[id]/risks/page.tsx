@@ -182,9 +182,18 @@ export default function RisksPage({
         method: 'POST',
       });
 
-      const resData = await res.json();
-      if (!res.ok || !resData.success) {
-        throw new Error(resData.error?.message || resData.error || 'Failed to generate default risks');
+      const text = await res.text();
+      let resData: any = null;
+      try {
+        resData = text ? JSON.parse(text) : null;
+      } catch {
+        throw new Error(`Server returned status ${res.status}: ${text ? text.slice(0, 100) : 'Empty response'}`);
+      }
+      if (!res.ok || !resData?.success) {
+        const errorMsg = typeof resData?.error === 'string'
+          ? resData.error
+          : resData?.error?.message || resData?.message || 'Failed to generate default risks';
+        throw new Error(errorMsg);
       }
 
       setAlertInfo({
